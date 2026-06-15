@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affilora - Settings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #1a1a1e;
+            color: #333333;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* SIDEBAR */
+
+    .sidebar{
+      width:260px;
+      height:100vh;
+      background:#111827;
+      position:fixed;
+      left:0;
+      top:0;
+      padding:25px;
+      border-right:1px solid rgba(255,255,255,0.05);
+    }
+
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:40px;
+    }
+
+    .logo-box{
+      width:50px;
+      height:50px;
+      background:#facc15;
+      border-radius:14px;
+      overflow:hidden;
+    }
+
+    .logo-box img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .logo-text h2{
+      color:#facc15;
+      font-size:24px;
+    }
+
+    .logo-text p{
+      color:#94a3b8;
+      font-size:12px;
+      letter-spacing:2px;
+    }
+
+    .menu{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .menu a{
+      text-decoration:none;
+      color:#cbd5e1;
+      padding:14px;
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      transition:0.3s;
+    }
+
+    .menu a:hover{
+      background:#1e293b;
+      color:#facc15;
+      transform:translateX(5px);
+    }
+
+    .active{
+      background:#facc15;
+      color:black !important;
+      font-weight:600;
+    }
+
+        /* --- MAIN CONTENT LAYOUT --- */
+        .main-content {
+            flex-grow: 1;
+            background-color: #1a1a1e;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-y: auto;
+            height: 100vh;
+        }
+
+        .settings-container {
+            width: 100%;
+            max-width: 900px;
+            background-color: #f5f5f7;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e1e24;
+            margin-bottom: 6px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: #66666d;
+            margin-bottom: 32px;
+        }
+
+        /* --- FORM STRUCTURES & HEADINGS --- */
+        .settings-section {
+            margin-bottom: 36px;
+            border-bottom: 1px solid #e0e0e6;
+            padding-bottom: 32px;
+        }
+
+        .settings-section:last-of-type {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .section-accent {
+            width: 4px;
+            height: 20px;
+            background-color: #e5b813;
+            border-radius: 2px;
+            margin-right: 12px;
+        }
+
+        .section-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e1e24;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 11fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #44444a;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d0d0d6;
+            border-radius: 8px;
+            background-color: #ffffff;
+            font-size: 14px;
+            color: #1e1e24;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        select:focus {
+            border-color: #e5b813;
+        }
+
+        /* --- NOTIFICATIONS TOGGLE PANEL --- */
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+        .toggle-row:last-child {
+            border-bottom: none;
+        }
+
+        .toggle-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333338;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #111111;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        /* --- VISUAL CREDIT CARD COMPONENT --- */
+        .card-preview-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .credit-card {
+            width: 340px;
+            height: 200px;
+            background: linear-gradient(135deg, #43603d 0%, #293d25 100%);
+            border-radius: 14px;
+            padding: 24px;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            position: relative;
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .card-brand {
+            font-weight: 700;
+            font-size: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        .card-chip {
+            width: 38px;
+            height: 28px;
+            background: linear-gradient(135deg, #ecc844 0%, #c69f1b 100%);
+            border-radius: 6px;
+        }
+
+        .card-display-number {
+            font-size: 20px;
+            letter-spacing: 2px;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        .card-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .card-meta-label {
+            font-size: 8px;
+            text-transform: uppercase;
+            color: #a3bda0;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+        }
+
+        .card-display-name {
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .card-display-expiry {
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .visa-logo {
+            font-style: italic;
+            font-weight: 800;
+            font-size: 18px;
+            letter-spacing: -0.5px;
+        }
+
+        /* --- BUTTON LAYOUT --- */
+        .action-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 12px;
+        }
+
+        .btn-save {
+            background-color: #556b50;
+            color: #ffffff;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            width: 100%;
+            max-width: 240px;
+        }
+
+        .btn-save:hover {
+            background-color: #41533d;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+            .main-content {
+                padding: 20px;
+            }
+            .action-container {
+                justify-content: center;
+            }
+            .btn-save {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+     <!-- SIDEBAR -->
+
+  <div class="sidebar">
+
+    <div class="logo">
+
+      <div class="logo-box">
+        <img src="Affilora main logo.jpeg" alt="Main logo">
+      </div>
+
+      <div class="logo-text">
+        <h2>Affilora</h2>
+        <p>DASHBOARD</p>
+      </div>
+
+    </div>
+
+    <div class="menu">
+
+      <a href="dashboard.html">
+        <i class="fa-solid fa-chart-line"></i>
+        <span>Dashboard</span>
+      </a>
+
+      <a href="task.html" class="active">
+        <i class="fa-solid fa-list-check"></i>
+        <span>Tasks</span>
+      </a>
+
+      <a href="referrals.html">
+        <i class="fa-solid fa-user-group"></i>
+        <span>Referrals</span>
+      </a>
+
+      <a href="wallet.html">
+        <i class="fa-solid fa-wallet"></i>
+        <span>Wallet</span>
+      </a>
+
+      <a href="support.html">
+        <i class="fa-solid fa-headset"></i>
+        <span>Support</span>
+      </a>
+
+      <a href="Membership.html">
+        <i class="fa-solid fa-crown"></i>
+        <span>Membership</span>
+      </a>
+
+      <a href="setting.html">
+        <i class="fa-solid fa-crown"></i>
+        <span>settings</span>
+      </a>
+
+      <a href="index.html">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span>Logout</span>
+      </a>
+
+    </div>
+
+  </div>
+
+
+    <div class="main-content">
+        <div class="settings-container">
+            <h1 class="page-title">Settings</h1>
+            <p class="page-subtitle">Manage your Affilora account settings and preferences.</p>
+
+            <form id="settingsForm">
+                <div class="settings-section">
+                    <div class="section-header">
+                        <div class="section-accent"></div>
+                        <h3>Profile Information</h3>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="full-name">Full Name</label>
+                            <input type="text" id="full-name" value="Collins Agu" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" value="collins@gmail.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="text" id="phone" value="+234 801 234 5678">
+                        </div>
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" value="@collins" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <div class="section-header">
+                        <div class="section-accent"></div>
+                        <h3>Security</h3>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="current-pass">Current Password</label>
+                            <input type="password" id="current-pass" placeholder="Enter current password">
+                        </div>
+                        <div class="form-group">
+                            <label for="new-pass">New Password</label>
+                            <input type="password" id="new-pass" placeholder="Enter new password">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <div class="section-header">
+                        <div class="section-accent"></div>
+                        <h3>Notifications</h3>
+                    </div>
+                    <div class="toggle-row">
+                        <span class="toggle-label">Email Notifications</span>
+                        <label class="switch">
+                            <input type="checkbox" id="emailNotif" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-row">
+                        <span class="toggle-label">SMS Notifications</span>
+                        <label class="switch">
+                            <input type="checkbox" id="smsNotif">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-row">
+                        <span class="toggle-label">Dark Mode</span>
+                        <label class="switch">
+                            <input type="checkbox" id="darkModeToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <div class="section-header">
+                        <div class="section-accent"></div>
+                        <h3>Payment Information</h3>
+                    </div>
+
+                    <div class="card-preview-wrapper">
+                        <div class="credit-card">
+                            <div class="card-top">
+                                <span class="card-brand">Affilora</span>
+                                <div class="card-chip"></div>
+                            </div>
+                            <div class="card-display-number" id="cardDisplayNumber">5399 xxxx xxxx 2026</div>
+                            <div class="card-bottom">
+                                <div>
+                                    <div class="card-meta-label">Card Holder</div>
+                                    <div class="card-display-name" id="cardDisplayName">Collins Agu</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div class="card-meta-label">Expires</div>
+                                    <div class="card-display-expiry" id="cardDisplayExpiry">12/28</div>
+                                    <div class="visa-logo">VISA</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="card-holder">Card Holder Name</label>
+                            <input type="text" id="card-holder" value="Collins Agu">
+                        </div>
+                        <div class="form-group">
+                            <label for="card-num">Card Number</label>
+                            <input type="text" id="card-num" placeholder="5399 xxxx xxxx 2026" maxlength="19">
+                        </div>
+                        <div class="form-group">
+                            <label for="card-expiry">Expiry Date (MM/YY)</label>
+                            <input type="text" id="card-expiry" value="12/28" maxlength="5">
+                        </div>
+                        <div class="form-group">
+                            <label for="bank-name">Bank Name</label>
+                            <select id="bank-name">
+                                <option value="">Select Bank</option>
+                                <option value="gtb">Guaranty Trust Bank (GTB)</option>
+                                <option value="access">Access Bank</option>
+                                <option value="zenith">Zenith Bank</option>
+                                <option value="uba">United Bank for Africa (UBA)</option>
+                                <option value="FBN">First Bank Of Nigeria</option>
+                                <option value="Opay">OPAY</option>
+                                <option value="MP">Moniepoint</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="acc-num">Account Number</label>
+                            <input type="text" id="acc-num" placeholder="0123456789" maxlength="10">
+                        </div>
+                        <div class="form-group">
+                            <label for="acc-name">Account Name</label>
+                            <input type="text" id="acc-name" value="Collins Agu">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="currency">Preferred Currency</label>
+                            <select id="currency">
+                                <option value="NGN">NGN (Nigerian Naira)</option>
+                                <option value="USD">USD (US Dollar)</option>
+                                <option value="GBP">GBP (British Pound)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-container">
+                    <button type="submit" class="btn-save">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- 1. Credit Card Live Sync Elements ---
+            const inputCardName = document.getElementById('card-holder');
+            const inputCardNum = document.getElementById('card-num');
+            const inputCardExpiry = document.getElementById('card-expiry');
+
+            const displayCardName = document.getElementById('cardDisplayName');
+            const displayCardNum = document.getElementById('cardDisplayNumber');
+            const displayCardExpiry = document.getElementById('cardDisplayExpiry');
+
+            // Sync Card Holder Name
+            inputCardName.addEventListener('input', (e) => {
+                displayCardName.textContent = e.target.value.trim() || "CARD HOLDER";
+            });
+
+            // Sync and Format Card Number (Adds spaces automatically every 4 digits)
+            inputCardNum.addEventListener('input', (e) => {
+                let clearValue = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+                let matches = clearValue.match(/\d{4,16}/g);
+                let match = (matches && matches[0]) || '';
+                let parts = [];
+
+                for (let i=0, len=match.length; i<len; i+=4) {
+                    parts.push(match.substring(i, i+4));
+                }
+
+                if (parts.length > 0) {
+                    e.target.value = parts.join(' ');
+                    displayCardNum.textContent = parts.join(' ');
+                } else {
+                    e.target.value = clearValue;
+                    displayCardNum.textContent = clearValue || "5399 xxxx xxxx 2026";
+                }
+            });
+
+           // Sync and Format Expiry Date (Fixed Input Bug)
+inputCardExpiry.addEventListener('input', (e) => {
+    // Strip everything except numbers
+    let clearValue = e.target.value.replace(/[^0-9]/g, '');
+    
+    // Auto-insert slash after the first 2 digits (Month)
+    if (clearValue.length >= 2) {
+        e.target.value = clearValue.substring(0, 2) + '/' + clearValue.substring(2, 4);
+    } else {
+        e.target.value = clearValue;
+    }
+    
+    // Update the visual credit card text
+    displayCardExpiry.textContent = e.target.value || "MM/YY";
+});
+
+// Clean handling for backspacing over the slash
+inputCardExpiry.addEventListener('keydown', (e) => {
+    if (e.key === 'Backspace' && e.target.value.length === 3) {
+        e.target.value = e.target.value.substring(0, 2);
+    }
+});
+
+
+            // --- 2. Sidebar Navigation Active Link Switcher ---
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    // Prevent default redirect for testing mockup environment links
+                    if(item.querySelector('a').getAttribute('href') === '#') {
+                        e.preventDefault();
+                    }
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+                });
+            });
+
+
+           // --- 3. Form Submission Handling ---
+const settingsForm = document.getElementById('settingsForm');
+settingsForm.addEventListener('submit', (e) => {
+    e.preventDefault(); // Prevents page reload
+
+    // Grab the bank and account values from the inputs
+    const bankValue = document.getElementById('bank-name').value;
+    const accNumValue = document.getElementById('acc-num').value;
+    const accNameValue = document.getElementById('acc-name').value;
+
+    // Get the selected bank's readable text name (e.g., "Zenith Bank")
+    const bankSelect = document.getElementById('bank-name');
+    const bankText = bankSelect.options[bankSelect.selectedIndex].text;
+
+    // Validate that they actually filled out the bank details before saving
+    if (!bankValue || !accNumValue || !accNameValue) {
+        alert('Please complete all payment information fields before saving.');
+        return;
+    }
+
+    // Save the payment details to localStorage
+    localStorage.setItem('userBankCode', bankValue);
+    localStorage.setItem('userBankName', bankText);
+    localStorage.setItem('userAccNum', accNumValue);
+    localStorage.setItem('userAccName', accNameValue);
+
+    console.log('Payment Info Saved Context:', { bankText, accNumValue, accNameValue });
+    
+    // Success confirmation
+    alert('Settings and payment details saved successfully!');
+});
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+myapp/node_modules
+backend/node_modules
+
+myapp/dist
+myapp/build
+
+backend/uploads
+
+.env
+backend/.env
+myapp/.env
