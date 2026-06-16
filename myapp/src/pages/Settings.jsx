@@ -228,7 +228,7 @@ const maskedCardNumber =
     alert("Settings saved successfully");
 
     socket.emit(
-  "updateUser",
+  "userUpdated",
   user
 );
 

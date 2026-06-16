@@ -862,7 +862,8 @@ exports.getMyReferrals = async (req, res) => {
     const user = await User.findById(userId);
 
     const referrals = await User.find({
-  referredBy: user.referralCode
+  referredBy: user.referrer
+
 });
 
 

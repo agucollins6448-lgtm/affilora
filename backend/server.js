@@ -6,7 +6,6 @@ const cors = require('cors');
 
 const adminRoutes = require("./routes/adminRoutes");
 const connectDB = require("./config/db");
-const codeRoutes = require("./routes/codeRoutes");
 const cpxRoutes = require("./routes/cpxRoutes");
 const supportRoutes = require("./routes/supportRoutes");
 const membershipRequestRoutes = require("./routes/membershipRequestRoutes");
@@ -35,21 +34,6 @@ app.use(
 app.use(
   "/api/auth",
   require("./routes/authRoutes")
-);
-
-app.use(
-  "/api/vendors",
-  require("./routes/vendorRoutes")
-);
-
-app.use(
-  "/api",
-  require("./routes/dashboardRoutes")
-);
-
-app.use(
-  "/api/payments",
-  require("./routes/paymentRoutes")
 );
 
 app.use(
@@ -93,10 +77,6 @@ app.use(
   membershipRequestRoutes
 );
 
-app.use(
-  "/api/codes",
-  codeRoutes
-);
 
 app.use(
 
