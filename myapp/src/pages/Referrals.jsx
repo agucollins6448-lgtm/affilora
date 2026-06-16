@@ -35,7 +35,7 @@ notifications.filter(
       await navigator.clipboard.writeText(referralLink);
       setCopyStatus("Copied! ✓");
       setTimeout(() => setCopyStatus("Copy Link"), 2500);
-    } catch (err) {
+    } catch {
       setCopyStatus("Failed to copy");
     }
   };

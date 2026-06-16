@@ -151,7 +151,7 @@ useEffect(() => {
 
       }));
 
-    } catch (err) {
+    } catch {
 
       console.log(
         "Error loading user"
