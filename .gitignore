@@ -5,6 +5,7 @@ myapp/dist
 myapp/build
 
 backend/uploads
+backend/receipts
 
 .env
 backend/.env
