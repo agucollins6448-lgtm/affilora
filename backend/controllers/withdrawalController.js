@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-
+const cloudinary = require("../config/cloudinary");
 const generateWithdrawalReceipt = require("../utils/generateWithdrawalReceipt");
 
 const Transaction =
@@ -304,11 +304,14 @@ await Transaction.create({
 
 const io = req.app.get("io");
 
-io.emit("withdrawalUpdated");
+io.to(user._id.toString())
+  .emit("withdrawalUpdated");
 
-io.emit("userUpdated");
+io.to(user._id.toString())
+  .emit("transactionUpdated");
 
-io.emit("transactionUpdated");
+io.to(user._id.toString())
+  .emit("userUpdated");
 
     res.status(201).json({
 
@@ -342,9 +345,14 @@ async (req, res) => {
 
     const io = req.app.get("io");
 
-    io.emit("withdrawalUpdated");
-    io.emit("userUpdated");
-    io.emit("transactionUpdated");
+io.to(user._id.toString())
+  .emit("withdrawalUpdated");
+
+io.to(user._id.toString())
+  .emit("transactionUpdated");
+
+io.to(user._id.toString())
+  .emit("userUpdated");
 
     res.json(withdrawals);
 
@@ -363,10 +371,11 @@ async (req, res) => {
 
   try {
 
-    const withdrawal =
-  await Withdrawal.findById(
-    req.params.id
-  ).populate("user");
+const withdrawal =
+  await Withdrawal.findOne({
+    _id: req.params.id,
+    user: req.user.id
+  }).populate("user");
 
     if (!withdrawal) {
 
@@ -414,10 +423,24 @@ await generateWithdrawalReceipt(
   receiptPath
 );
 
+const uploadResult =
+  await cloudinary.uploader.upload(
+    receiptPath,
+    {
+      resource_type: "raw",
+      folder: "affilora-receipts"
+    }
+  );
+
 withdrawal.receiptPath =
-  receiptPath;
+  uploadResult.secure_url;
+
+withdrawal.receiptPublicId =
+  uploadResult.public_id;
 
 await withdrawal.save();
+
+fs.unlinkSync(receiptPath);
 
 await Transaction.findOneAndUpdate(
   {
@@ -491,18 +514,18 @@ await AdminLog.create({
 const io = req.app.get("io");
 
 
-io.emit("notificationUpdated");
+io.to(user._id.toString())
+  .emit("notificationUpdated");
 
-io.emit(
-  "withdrawalUpdated"
-);
+io.emit("withdrawalUpdated");
 
-io.emit("transactionUpdated");
+io.to(user._id.toString())
+  .emit("transactionUpdated");
+
+io.to(user._id.toString())
+  .emit("userUpdated");
 
 io.emit("adminLogUpdated");
-
-io.emit("userUpdated")
-
 
 res.json({
   message: "Withdrawal approved"
@@ -617,17 +640,18 @@ await AdminLog.create({
 
 const io = req.app.get("io");
 
-io.emit("notificationUpdated");
+io.to(user._id.toString())
+  .emit("notificationUpdated");
 
-io.emit(
-  "withdrawalUpdated"
-);
+io.emit("withdrawalUpdated");
 
-io.emit("transactionUpdated");
+io.to(user._id.toString())
+  .emit("transactionUpdated");
+
+io.to(user._id.toString())
+  .emit("userUpdated");
 
 io.emit("adminLogUpdated");
-
-io.emit("userUpdated")
 
     res.json({
       message:

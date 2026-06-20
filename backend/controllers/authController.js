@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const mongoose = require("mongoose");
 const ActivationCode = require("../models/ActivationCode");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
@@ -7,7 +8,7 @@ const Task = require("../models/Task");
 const Transaction = require("../models/Transaction");
 const Notification = require("../models/Notification");
 const sendEmail = require("../utils/sendEmail");
-
+const {uploadToCloudinary} = require("../middleware/upload");
 
 
 exports.registerUser = async (req, res) => {
@@ -62,17 +63,31 @@ exports.registerUser = async (req, res) => {
     // 4. Create referral code
     const referralCode = crypto.randomBytes(4).toString("hex");
 
+    let referrer = null;
+
+if (referredBy) {
+
+  referrer = await User.findOne({
+    referralCode: referredBy.trim()
+  });
+
+}
+
     // 5. Create user
-    const user = await User.create({
-      fullName,
-      username,
-      email,
-      phone,
-      password: hashedPassword,
-      referralCode,
-      referredBy: referredBy || null,
-      membershipActive: true
-    });
+const user = await User.create({
+  fullName,
+  username,
+  email,
+  phone,
+  password: hashedPassword,
+  referralCode,
+
+  referredBy: referrer
+    ? referrer._id
+    : null,
+
+  membershipActive: true
+});
 await Notification.create({
 
 title:
@@ -115,18 +130,14 @@ await sendEmail(
 const io = req.app.get("io");
 
 
-io.emit("notificationUpdated");
+io.to(user._id.toString())
+  .emit("notificationUpdated");
 
-io.emit(
-  "userUpdated"
-);
+io.to(user._id.toString())
+  .emit("userUpdated");
 
     // 6. Process referral reward (FIXED)
- if (referredBy) {
 
-  const referrer = await User.findOne({
-    referralCode: referredBy.trim()
-  });
 
   if (referrer) {
 
@@ -175,13 +186,17 @@ await Notification.create({
 
 const io = req.app.get("io");
 
-io.emit("userUpdated")
+io.to(referrer._id.toString())
+  .emit("userUpdated");
 
-io.emit("referralUpdated")
+io.to(referrer._id.toString())
+  .emit("referralUpdated");
 
-io.emit("notificationUpdated");
+io.to(referrer._id.toString())
+  .emit("notificationUpdated");
 
-io.emit("transactionUpdated")
+io.to(referrer._id.toString())
+  .emit("transactionUpdated");
 
 
     console.log(
@@ -198,7 +213,7 @@ io.emit("transactionUpdated")
 
   }
 
-}
+
 
     // 7. Mark activation code used
     activationCode.used = true;
@@ -399,9 +414,11 @@ await sendEmail(
 
 const io = req.app.get("io");
 
-io.emit("userUpdated")
+io.to(user._id.toString())
+  .emit("notificationUpdated");
 
-io.emit("notificationUpdated");
+io.to(user._id.toString())
+  .emit("userUpdated");
 
     res.json({
 
@@ -426,6 +443,8 @@ io.emit("notificationUpdated");
 exports.uploadProfileImage =
 async (req, res) => {
 
+  console.log(req.file);
+
   try {
 
     const user =
@@ -434,38 +453,35 @@ async (req, res) => {
       );
 
     if (!user) {
-
       return res.status(404).json({
-
-        message:
-          "User not found"
-
+        message: "User not found"
       });
-
     }
 
-    user.profileImage =
-      req.file.filename;
+const result =
+  await uploadToCloudinary(
+    req.file.buffer
+  );
+
+user.profileImage =
+  result.secure_url;
 
     await user.save();
 
+    const io = req.app.get("io");
+
+io.to(user._id.toString())
+  .emit("userUpdated");
+
     res.json({
-
-      message:
-        "Profile image updated",
-
-      image:
-        req.file.filename
-
+      message: "Profile image updated",
+      image: result.secure_url
     });
 
   } catch (error) {
 
     res.status(500).json({
-
-      message:
-        error.message
-
+      message: error.message
     });
 
   }
@@ -543,8 +559,9 @@ io.to(user._id.toString())
 exports.getCurrentUser = async (req, res) => {
   try {
 
-    const user = await User.findById(req.user.id);
-
+const user = await User.findById(
+  req.user.id
+)
     if (!user) {
       return res.status(404).json({
         message: "User not found"
@@ -793,6 +810,8 @@ res.json({
 
   username: user.username,
 
+  profileImage: user.profileImage,
+
   emailNotifications: user.emailNotifications,
 
   walletBalance: user.walletBalance || 0,
@@ -801,7 +820,11 @@ res.json({
 
   membershipActivatedAt: user.membershipActivatedAt,
 
+  referralCode: user.referralCode,
+
   referralsCount: user.referralsCount || 0,
+  
+  referredBy: user.referredBy,
 
   card: user.card || null,
 
@@ -814,6 +837,8 @@ res.json({
   tasksToday,
 
   todayEarnings,
+
+  referralEarnings: user.referralEarnings,
 
   referralsThisWeek,
 
@@ -854,74 +879,15 @@ res.json({
 };
 
 exports.getMyReferrals = async (req, res) => {
-
   try {
-
-    const userId = req.user.id;
-
-    const user = await User.findById(userId);
-
     const referrals = await User.find({
-  referredBy: user.referrer
-
-});
-
+      referredBy: req.user.id
+    })
 
     res.json(referrals);
 
   } catch (error) {
-
     console.log(error);
-
-    res.status(500).json({
-      message: "Server error"
-    });
-
-  }
-
-};
-
-exports.upgradeMembership = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-
-    const { plan } = req.body;
-
-    user.membershipTier = plan;
-    user.membershipActivatedAt = new Date();
-
-
-    await user.save();
-
-    res.json({
-      success: true,
-      membershipTier: user.membershipTier,
-      membershipActivatedAt: user.membershipActivatedAt
-    });
-
-  } catch (err) {
-    res.status(500).json({
-      message: err.message
-    });
-  }
-};
-
-exports.resetMembership = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-
-    user.membershipTier = "Starter";
-    user.membershipActivatedAt = null;
-
-    await user.save();
-
-    res.json({
-      success: true
-    });
-
-  } catch (err) {
-    res.status(500).json({
-      message: err.message
-    });
+    res.status(500).json({ message: "Server error" });
   }
 };

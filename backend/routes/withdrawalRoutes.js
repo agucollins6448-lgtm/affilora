@@ -39,6 +39,7 @@ router.get(
 
 router.put(
   "/approve/:id",
+  authMiddleware,
   adminMiddleware,
   approveWithdrawal
 );

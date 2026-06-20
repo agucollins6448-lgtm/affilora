@@ -2,18 +2,14 @@ import { useState, useEffect } from "react";
 import API from "../api";
 import socket from "../socket";
 export default function Referrals({ setView, onLogout }) {
-  // Simulates reading user data from local state or context
-  const currentUser = JSON.parse(
-  localStorage.getItem("currentUser") || "null"
-);
-  
+
 const [userStats, setUserStats] =useState({
   referralsThisWeek: 0
 })
 
 
 const referralCode =
-  currentUser?.referralCode;
+  userStats?.referralCode;
 
   const referralLink =
   `${window.location.origin}/signup?ref=${referralCode}`;
@@ -189,7 +185,7 @@ const activeReferrals =
   ).length;
 
 const totalEarnings =
-  currentUser?.referralEarnings || 0;
+  userStats?.referralEarnings || 0;
 
 const engagementRate =
   totalReferrals === 0
@@ -341,7 +337,7 @@ const engagementRate =
       color: "var(--fg)",
       fontSize: "15px",
       width: "100%",
-      fontFamily: "'Inter', sans-serif"
+      fontFamily: "'Inter', sans-serif",
     },
     copyBtn: {
       background: "var(--gradient-gold)",
@@ -781,19 +777,12 @@ n.createdAt
       height: "45px"
     }}
   >
-    <img
-      src={
-        localStorage.getItem(
-  `profileImage_${currentUser?._id}`
-)
-
-          ? `http://localhost:5000/uploads/${localStorage.getItem(
-  `profileImage_${currentUser?._id}`
-)}`
-
-          : "https://i.pravatar.cc/100"
-      }
-      alt="Avatar"
+<img
+  src={
+    userStats?.profileImage ||
+    "https://i.pravatar.cc/100"
+  }
+  alt="Avatar"
       style={{
         width: "45px",
         height: "45px",
@@ -868,12 +857,7 @@ n.createdAt
 
           }
 
-          localStorage.setItem(
-  `profileImage_${currentUser?._id}`,
-  data.image
-);
-
-          window.location.reload();
+await fetchUserStats();
 
         } catch (error) {
 
@@ -922,6 +906,7 @@ n.createdAt
             <p style={{ color: "var(--muted)", fontSize: "0.95rem", margin: 0 }}>Share your elite link with networkers and claim secure payouts instantly.</p>
             
             <div style={styles.linkInputBox}>
+              <i className="fa-solid fa-link" style={{marginRight: "-48px"}}></i>
               <input 
                 type="text" 
                 value={referralLink} 
@@ -942,7 +927,7 @@ n.createdAt
         </div>
 
         {/* METRICS STREAKS */}
-        <div className="stats" style={styles.statsGrid}>
+        <div style={styles.statsGrid}>
           <div className="stat-card" style={styles.statCard}>
             <h3 style={styles.statTitle}>Total Referrals</h3>
             <h1 style={styles.statValue}>{totalReferrals}</h1>

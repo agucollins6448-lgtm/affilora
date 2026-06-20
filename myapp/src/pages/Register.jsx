@@ -1,6 +1,7 @@
 import { useState,} from "react";
 import API from "../api";
 
+
 const params =
   new URLSearchParams(window.location.search);
 
@@ -76,6 +77,8 @@ export default function Register({ setView }) {
             {
 
               ...form,
+
+              referredBy: form.referredBy?.trim() || null,
 
               activationCode,
 
@@ -262,34 +265,19 @@ export default function Register({ setView }) {
 
   return (
 
-    <div style={styles.wrapper}>
+    <div className="wrapper3">
 
-      <div style={styles.blobGreen}></div>
+      <div className="blobGreen2"></div>
 
-      <div style={styles.blobGold}></div>
+      <div className="blobGold2"></div>
 
-      <div style={styles.container}>
+      <div className="container3">
 
         {/* BRAND */}
 
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "12px",
-            marginBottom: "32px"
-          }}
-        >
+        <div className="head3">
 
-          <div
-            style={{
-              width: "45px",
-              height: "45px",
-              borderRadius: "12px",
-              overflow: "hidden"
-            }}
-          >
+          <div className="head4">
 
             <img
               src="/Affilora main logo.jpeg"
@@ -302,12 +290,7 @@ export default function Register({ setView }) {
 
           <div>
 
-            <span
-              style={{
-                fontSize: "28px",
-                fontWeight: "800"
-              }}
-            >
+            <span className="affi">
 
               Affilora
 
@@ -319,11 +302,7 @@ export default function Register({ setView }) {
 
         {/* HEADER */}
 
-        <div
-          style={{
-            textAlign: "center",
-            marginBottom: "36px"
-          }}
+        <div className="divCre"
         >
 
           <h2>
@@ -361,8 +340,7 @@ export default function Register({ setView }) {
             >
 
               <i
-                className="fa-solid fa-user"
-                style={styles.icon}
+                className="fa-solid fa-user icon"
               ></i>
 
               <input
@@ -376,7 +354,7 @@ export default function Register({ setView }) {
                   )
                 }
                 required
-                style={styles.input}
+                className="input1"
               />
 
             </div>
@@ -402,8 +380,7 @@ export default function Register({ setView }) {
             >
 
               <i
-                className="fa-solid fa-at"
-                style={styles.icon}
+                className="fa-solid fa-at icon"
               ></i>
 
               <input
@@ -417,7 +394,7 @@ export default function Register({ setView }) {
                   )
                 }
                 required
-                style={styles.input}
+                className="input1"
               />
 
             </div>
@@ -443,8 +420,7 @@ export default function Register({ setView }) {
             >
 
               <i
-                className="fa-solid fa-envelope"
-                style={styles.icon}
+                className="fa-solid fa-envelope icon"
               ></i>
 
               <input
@@ -458,7 +434,7 @@ export default function Register({ setView }) {
                   )
                 }
                 required
-                style={styles.input}
+                className="input1"
               />
 
             </div>
@@ -484,8 +460,7 @@ export default function Register({ setView }) {
             >
 
               <i
-                className="fa-solid fa-phone"
-                style={styles.icon}
+                className="fa-solid fa-phone icon"
               ></i>
 
               <input
@@ -500,7 +475,7 @@ export default function Register({ setView }) {
                 }
                 maxLength={11}
                 required
-                style={styles.input}
+                className="input1"
               />
 
             </div>
@@ -526,8 +501,7 @@ export default function Register({ setView }) {
             >
 
               <i
-                className="fa-solid fa-lock"
-                style={styles.icon}
+                className="fa-solid fa-lock icon"
               ></i>
 
               <input
@@ -545,7 +519,7 @@ export default function Register({ setView }) {
                   )
                 }
                 required
-                style={styles.input}
+                className="input1"
               />
 
               <span
@@ -554,14 +528,7 @@ export default function Register({ setView }) {
                     !showPassword
                   )
                 }
-                style={{
-                  position: "absolute",
-                  right: "18px",
-                  top: "50%",
-                  transform:
-                    "translateY(-50%)",
-                  cursor: "pointer"
-                }}
+                className="showPassw"
               >
 
                 <i
@@ -597,8 +564,7 @@ export default function Register({ setView }) {
             >
 
               <i
-                className="fa-solid fa-user-plus"
-                style={styles.icon}
+                className="fa-solid fa-user-plus icon"
               ></i>
 
               <input
@@ -606,7 +572,7 @@ export default function Register({ setView }) {
                 placeholder="Referral code"
                 value={form.referredBy}
                 readOnly
-                style={styles.input}
+                className="input1"
               />
 
             </div>
@@ -632,8 +598,7 @@ export default function Register({ setView }) {
             >
 
               <i
-                className="fa-solid fa-key"
-                style={styles.icon}
+                className="fa-solid fa-key icon"
               ></i>
 
               <input
@@ -646,7 +611,7 @@ export default function Register({ setView }) {
                   )
                 }
                 required
-                style={styles.input}
+                className="input1"
               />
 
             </div>
@@ -655,9 +620,12 @@ export default function Register({ setView }) {
 
           {/* TERMS */}
 
-          <div
+          <div 
             style={{
-              marginBottom: "24px"
+              marginBottom: "24px",
+              display: "flex",
+              alignItems: "left",
+              marginLeft: "-100px"
             }}
           >
 
@@ -668,7 +636,8 @@ export default function Register({ setView }) {
 
             <span
               style={{
-                marginLeft: "10px"
+                marginLeft: "-255px",
+                width: "250px"
               }}
             >
 
@@ -682,7 +651,7 @@ export default function Register({ setView }) {
 
           <button
             type="submit"
-            style={styles.btnGold}
+            className="btnGoldgg"
             disabled={loading}
           >
 
@@ -706,7 +675,7 @@ export default function Register({ setView }) {
 
           <div>
 
-            <label style={styles.label}>
+            <label className="label">
               Buy Activation Code
             </label>
 
@@ -717,8 +686,8 @@ export default function Register({ setView }) {
                   e.target.value
                 )
               }
+              className="input1"
               style={{
-                ...styles.input,
                 cursor: "pointer"
               }}
             >
@@ -740,7 +709,7 @@ export default function Register({ setView }) {
             <button
               type="button"
               onClick={openVendor}
-              style={styles.btnGlass}
+              className="btnGlass2"
             >
 
               Contact Vendor
@@ -768,13 +737,7 @@ export default function Register({ setView }) {
               setView("login")
             }
 
-            style={{
-              background: "none",
-              border: "none",
-              color: "gold",
-              marginLeft: "8px",
-              cursor: "pointer"
-            }}
+            className="loginreg"
 
           >
 

@@ -18,10 +18,23 @@ const [notifications, setNotifications] = useState([]);
 
 const [showNotifications, setShowNotifications] = useState(false);
 
+useEffect(() => {
 
-const currentUser = JSON.parse(
-  localStorage.getItem("currentUser") || "null"
-);
+  const currentUser =
+    JSON.parse(
+      localStorage.getItem("currentUser") || "null"
+    );
+
+  if (currentUser?._id) {
+
+    socket.emit(
+      "join",
+      currentUser._id
+    );
+
+  }
+
+}, []);
 
 const unreadCount =
 notifications.filter(
@@ -126,42 +139,6 @@ useEffect(() => {
 
 }, []);
 
-  // Load persistent user data when component mounts
- useEffect(() => {
-
-  const currentUser = JSON.parse(
-  localStorage.getItem("currentUser") || "null"
-);
-
-  if (currentUser) {
-
-    try {
-
-      const parsedUser = currentUser;
-
-      setUserData(prev => ({
-
-        ...prev,
-
-        fullName:
-          parsedUser.fullName || "Member",
-
-        profileImage:
-          parsedUser.profileImage || ""
-
-      }));
-
-    } catch {
-
-      console.log(
-        "Error loading user"
-      );
-
-    }
-
-  }
-
-}, []);
   const styles = {
     wrapper: {
       minHeight: "100vh",
@@ -737,17 +714,13 @@ n.createdAt
       height: "45px"
     }}
   >
-   <img
+<img
   src={
-    localStorage.getItem(
-  `profileImage_${currentUser?._id}`
-)
-      ? `http://localhost:5000/uploads/${localStorage.getItem(
-  `profileImage_${currentUser?._id}`
-)}`
-      : "https://i.pravatar.cc/100"
+    userData?.profileImage ||
+    "https://i.pravatar.cc/100"
   }
   alt="Avatar"
+
   style={{
     width: "45px",
     height: "45px",
@@ -821,13 +794,7 @@ n.createdAt
             return;
 
           }
-
-          localStorage.setItem(
-  `profileImage_${currentUser?._id}`,
-  data.image
-);
-
-          window.location.reload();
+await fetchUser();
 
         } catch (error) {
 

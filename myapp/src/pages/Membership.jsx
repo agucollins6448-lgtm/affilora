@@ -523,7 +523,7 @@ useEffect(() => {
           
           {/* BRONZE */}
           {showBronze && (
-          <div className="plan-card" style={{
+          <div className="" style={{
     ...styles.planCard,
     ...(activeTier === "Bronze" && {
       border: "2px solid #cd7f32",
@@ -583,7 +583,7 @@ useEffect(() => {
    
           {/* SILVER */}
           {showSilver && (
-          <div className="plan-card popular" style={{ ...styles.planCard, ...styles.popular, ...(activeTier === "Silver" && {
+          <div className="popular" style={{ ...styles.planCard, ...styles.popular, ...(activeTier === "Silver" && {
   border: "2px solid #c0c0c0",
   boxShadow: "0 0 25px rgba(192,192,192,0.35)"
 })}} onMouseEnter={cardHoverIn} onMouseLeave={cardHoverOut}>
@@ -642,7 +642,7 @@ useEffect(() => {
 
           {/* GOLD */}
           {showGold && (
-          <div className="plan-card gold" style={{ ...styles.planCard, ...styles.gold, ...(activeTier === "Gold" && {
+          <div className="" style={{ ...styles.planCard, ...styles.gold, ...(activeTier === "Gold" && {
   border: "2px solid #ffd700",
   boxShadow: "0 0 25px rgba(255,215,0,0.35)"
 })}} onMouseEnter={cardHoverIn} onMouseLeave={cardHoverOut}>
@@ -700,7 +700,7 @@ useEffect(() => {
 
           {/* PREMIUM */}
           {showPremium && (
-          <div className="plan-card premium" style={{...styles.planCardprem, ...(activeTier === "Premium" && {
+          <div className="" style={{...styles.planCardprem, ...(activeTier === "Premium" && {
   border: "2px solid #8b5cf6",
   boxShadow: "0 0 25px rgba(139,92,246,0.35)"
 })}} onMouseEnter={cardHoverIn} onMouseLeave={cardHoverOut}>

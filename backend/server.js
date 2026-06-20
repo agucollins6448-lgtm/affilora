@@ -3,7 +3,7 @@ const { Server } = require("socket.io");
 require("dotenv").config();
 const express = require("express");
 const cors = require('cors');
-
+const cloudinary = require("./config/cloudinary");
 const adminRoutes = require("./routes/adminRoutes");
 const connectDB = require("./config/db");
 const cpxRoutes = require("./routes/cpxRoutes");
@@ -119,6 +119,21 @@ io.on("connection", socket => {
   console.log(
     "Client Connected",
     socket.id
+  );
+
+  socket.on(
+    "join",
+    userId => {
+
+      socket.join(
+        userId.toString()
+      );
+
+      console.log(
+        `User ${userId} joined room`
+      );
+
+    }
   );
 
   socket.on(

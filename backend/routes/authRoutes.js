@@ -18,8 +18,6 @@ const {
 
   getCurrentUser,
 
-  upgradeMembership,
-
   resetMembership,
 
   getMyReferrals
@@ -33,6 +31,7 @@ const authMiddleware =
     "../middleware/authMiddleware"
 
   );
+
 
 const upload =
   require(
@@ -69,6 +68,7 @@ router.put(
 
 );
 
+
 router.put(
 
   "/upload-profile",
@@ -88,17 +88,6 @@ router.put("/update-settings",
   updateSettings
 );
 
-router.put(
-  "/membership/upgrade",
-  authMiddleware,
-  upgradeMembership
-);
-
-router.put(
-  "/membership/reset",
-  authMiddleware,
-  resetMembership
-);
 
  router.get(
   "/my-referrals",

@@ -1,0 +1,589 @@
+/* Dashboard */
+:root {
+  --bg: #0a0a1a;
+  --surface: #141432;
+  --surfaceElevated: #1e1e5a;
+  --accent: #4f46e5;
+  --accentHover: #4338ca;
+  --textPrimary: #f8fafc;
+  --textSecondary: #94a3b8;
+  --border: rgba(148, 163, 184, 0.12);
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --gold-2:#e0a43a;
+  --danger: #ef4444;
+  --info: #3b82f6;
+  --purple: #a855f7;
+  --bronze: #cd7f32;
+  --silver: #c0c0c0;
+  --gold: #eab308;
+  --premium: #8b5cf6;
+  --starter: #64748b;  
+
+  --heading: 'Space Grotesk', sans-serif;
+  --body: 'DM Sans', sans-serif;
+
+  --sm: 6px;
+  --md: 10px;
+  --lg: 14px;
+  --xl: 18px;
+
+  --shadow: 0 10px 30px -8px rgba(0,0,0,0.45);
+  --shadowSm: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.globalStyle {
+  font-family: var(--body);
+  color: var(--textPrimary);
+  line-height: 1.5;
+}
+
+.global{
+  display: flex; 
+  min-height: 100vh; 
+  background: var(--bg); 
+}
+
+main{
+  flex: 1; 
+  padding: 28px 32px; 
+  overflow-x: hidden;
+}
+
+aside{
+  width: 260px;
+  background: var(--surface);
+  color: var(--textPrimary);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 4px 0 24px rgba(0,0,0,0.35);
+  position: sticky;
+  top: 0;
+  height: 100.94vh;
+  overflow-y: auto;
+}
+
+textarea{
+  min-height: 100px; 
+  resize: vertical;
+}
+
+.p{
+  margin-bottom: 6px;
+}
+
+.adminText{
+  font-family: var(--heading);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-bottom: 20px;
+  color: var(--accent);    
+}
+
+.sidebarBtn{
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: var(--md);
+  border: none;
+  background: transparent;
+  color: var(--textSecondary);
+  font-family: var(--body);
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sidebarBtn:hover{
+  background: var(--surfaceElevated);
+}
+
+.sidebarBtn.active{
+  background: var(--accent);
+  color: #fff;
+}
+
+.sidebarBtn.active:hover{
+  background: var(--accent);
+}
+
+.stat{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;    
+}
+
+.status{
+  font-weight: 500; 
+  color: var(--textSecondary);
+}
+
+.statusLive {
+  color: var(--success);
+}
+
+.statusOffline {
+  color: var(--danger);
+}
+
+.pgSz{
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+}
+
+.show{
+  color: var(--textSecondary); 
+  font-size: 0.9rem;
+}
+
+.overview{
+  height: 30px;
+}
+
+.sysOv{
+  font-family: var(--heading); 
+  font-size: 1.8rem; 
+  font-weight: 700; 
+  margin-bottom: 24px;
+}
+
+.totUs{
+  font-size: 0.85rem; 
+  text-transform: uppercase; 
+  letter-spacing: 1px; 
+  color: var(--textSecondary); 
+  margin-bottom: 8px;
+}
+
+.tab{
+  font-family: var(--heading); 
+  font-size: 1.8rem; 
+  font-weight: 700; 
+  margin-bottom: 20px;
+}
+
+.seFiSo{
+  display: flex; 
+  gap: 12px; 
+  margin-bottom: 20px; 
+  flex-wrap: wrap; 
+  align-items: center;
+}
+
+.seFi{
+  display: flex;
+  flex-direction: column; 
+  gap: 12px; 
+  max-width: 600px;
+}
+
+.usLi{
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+  gap: 8px; 
+  margin-bottom: 12px;
+}
+
+.usDet{
+  font-family: var(--heading); 
+  font-size: 1.8rem; 
+  font-weight: 700; 
+  margin: 16px 0 20px;
+}
+
+.usStru{
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
+  gap: 10px;
+}
+
+.usBank{
+  margin-top: 20px; 
+  padding-top: 20px; 
+  border-top: 1px solid var(--border);
+}
+
+.usBankdiv{
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+  gap: 8px;
+}
+
+.usText{
+  color: var(--textSecondary);
+}
+
+.appr{
+  color: var(--success);
+}
+
+.pendi{
+  color: var(--warning);
+}
+
+.rejec{
+  color: var(--danger);
+}
+
+.usButtons{
+  display: flex; 
+  gap: 10px; 
+  flex-wrap: wrap;
+}
+
+.noFound{
+  text-align: center; 
+  padding: 40px; 
+  color: var(--textSecondary);
+}
+
+.cr{
+  display: flex; 
+  gap: 12px; 
+  flex-wrap: wrap; 
+  align-items: center; 
+  margin-bottom: 16px;
+}
+
+.crSe{
+  background: var(--surface);
+  padding: 22px;
+  border-radius: var(--lg);
+  margin-bottom: 24px;
+  box-shadow: var(--shadowSm);
+}
+
+.genCo{
+  background: var(--surface);
+  padding: 22px;
+  border-radius: var(--lg);
+  margin-bottom: 24px;
+  box-shadow: var(--shadowSm);
+}
+
+.sendNo{
+  background: var(--surface);
+  padding: 22px;
+  border-radius: var(--lg);
+  margin-bottom: 28px;
+  box-shadow: --shadowSm;
+}
+
+.f115{
+  font-family: var(--heading); 
+  font-size: 1.15rem; 
+  margin-bottom: 12px;
+}
+
+.acLi{
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); 
+  gap: 8px;
+}
+
+.tranCol{
+  font-weight: 700;
+  margin-left: 6px;
+  color: var(--warning);
+}
+
+.tranCol.with{
+  color: var(--danger);
+}
+
+.tranCol.refer{
+  color: var(--success);
+}
+
+.tranCol.ad{
+  color: var(--info);
+}
+
+.tranCol.surv{
+  color: var(--gold-2);
+}
+
+.tranLi{
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+  gap: 6px;
+}
+
+.notifTitle{
+  font-family: var(--heading); 
+  font-size: 1.1rem; 
+  margin-bottom: 6px;
+  color: var(--accent);
+}
+
+.notifInfo{
+  margin-bottom: 4px;
+}
+
+.notifDel{
+  margin-top: 12px; 
+  margin-left: 10px;
+}
+
+.walAdj{
+  margin-top: 24px; 
+  padding-top: 20px; 
+  border-top: 1px solid var(--border);
+}
+
+.walAdjdiv{
+  display: flex; 
+  gap: 12px; 
+  flex-wrap: wrap; 
+  align-items: center;
+}
+
+.logInfo{
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+  gap: 6px;
+}
+
+/* ── Reusable card shell ── */
+.cards{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.makeCard {
+  background: var(--surface);
+  color: var(--textPrimary);
+  padding: 22px;
+  border-radius: var(--lg);
+  box-shadow: var(--shadowSm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cardStyle {border-left: 4px solid var(--accent);}
+.greenCard {border-left: 4px solid var(--success);}
+.orangeCard {border-left: 4px solid var(--warning);}
+.redCard {border-left: 4px solid var(--danger);}
+.purpleCard {border-left: 4px solid var(--purple);}
+.starterCard {border-left: 4px solid var(--starter);}
+.bronzeCard {border-left: 4px solid var(--bronze);}
+.silverCard {border-left: 4px solid var(--silver);}
+.goldCard {border-left: 4px solid var(--gold);}
+.premiumCard {border-left: 4px solid var(--premium);}
+
+.cardText{
+  font-size: 0.85rem; 
+  text-transform: uppercase; 
+  letter-spacing: 1px; 
+  color: var(--textSecondary); 
+  margin-bottom: 8px;
+}
+
+.cardDesc{
+  font-size: 0.8rem; 
+  text-transform: uppercase; 
+  color: var(--textSecondary); 
+  letter-spacing: 1px;
+}
+
+.cardValues{
+  font-family: var(--heading); 
+  font-size: 2rem; 
+  font-weight: 700;
+}
+
+.incardValues{
+  font-family: var(--heading); 
+  font-size: 1.6rem; 
+  font-weight: 700; 
+  margin-top: 8px;
+}
+
+.wiCard{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.memCard{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.memLi{
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); 
+  gap: 8px; 
+  margin-bottom: 12px;
+}
+
+.memValues{
+  font-family: var(--heading); 
+  font-size: 1.8rem; 
+  font-weight: 700; 
+  margin-top: 8px;
+}
+
+.bronze{
+  color: var(--bronze);
+}
+
+.silver{
+  color: var(--silver);
+}
+
+.gold{
+  color: var(--gold);
+}
+
+.premium{
+  color: var(--premium);
+}
+
+.othCard{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* ── Inputs ── */
+.inputStyle {
+  padding: 10px 14px;
+  border-radius: var(--md);
+  border: 1px solid var(--border);
+  background: var(--surfaceElevated);
+  color: var(--textPrimary);
+  font-family: var(--body);
+  font-size: 0.95rem;
+  outline: none;
+  min-width: 200px;
+}
+
+.inputStyle .selectStyle {
+  cursor: pointer;
+}
+
+.se{
+  min-width: 240px;
+  width: 240px;
+}
+
+.seAc{
+  min-width: 260px;
+  width: 260px;
+}
+
+.pass{
+  min-width: 240px; 
+  width: 240px;
+  margin-right: 15px;
+}
+
+.showing{
+  color: var(--textSecondary); 
+  margin-bottom: 16px;
+}
+
+/* ── Buttons ── */
+.btnBase {
+  padding: 10px 18px;
+  border-radius: var(--md);
+  border: none;
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: 0.2s ease, transform 0.1s ease;
+}
+
+.btnPrimary {  background: var(--accent); color: #fff; }
+.btnDanger {  background: var(--danger); color: #fff; }
+.btnSuccess {  background: var(--success); color: #fff; }
+.btnGhost {
+  background: transparent;
+  color: var(--textSecondary);
+  border: 1px solid var(--border);
+}
+
+.logDelete{
+  opacity: 0; 
+  cursor: default;
+}
+
+
+.logout{
+  margin-top: 100px;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.conPay{
+  margin-top: 12px;
+}
+
+/* ── Table / list rows ── */
+.rowBase {
+  padding: 14px 18px;
+  background: var(--surface);
+  border-radius: var(--md);
+  margin-bottom: 10px;
+  box-shadow: var(--shadowSm);
+  color: var(--textPrimary);
+}
+
+/* ── Chart container ── */
+.chartBox {
+  background: var(--surface);
+  padding: 24px;
+  margin-top: 28px;
+  border-radius: var(--lg);
+  box-shadow: var(--shadow);
+}
+
+.chartText{
+  font-family: var(--heading); 
+  font-size: 1.25rem; 
+  margin-bottom: 16px;
+}
+
+/* ── Pagination ── */
+.pageBtn {
+  padding: 8px 14px;
+  border-radius: var(--md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--textPrimary);
+  font-weight: 500;
+  cursor: pointer;
+  font-family: var(--body);
+  transition: 0.2s ease;
+}
+
+.pageBtn.active {
+  background: var(--accent);
+  color: white;
+  font-weight: 700;
+}
+
+.paginButtons{
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: 8px; 
+  margin-top: 24px; 
+  flex-wrap: wrap;
+}

@@ -49,85 +49,18 @@ const SURVEY_REWARDS = {
   Premium: 250
 };
 
-exports.createTask =
-async (req, res) => {
-
-  try {
-
-    const {
-
-      userId,
-
-      type
-
-    } = req.body;
-
-    // Prevent duplicate daily ad rewards
-    if (type === "ads") {
-
-      const todayAds =
-  await Task.countDocuments({
-
-    userId,
-
-    type: "ads",
-
-    createdAt: {
-
-      $gte: new Date(
-        new Date().setHours(
-          0,0,0,0
-        )
-      )
-
-    }
-
-  });
-
-if (todayAds >= 3) {
-
-  return res.status(400).json({
-
-    message:
-      "Daily ad limit reached"
-
-  });
-
-}
-    }
-
-    const task =
-      await Task.create(req.body);
-
-    res.status(201).json(task);
-
-  } catch (error) {
-
-    res.status(500).json({
-
-      message: error.message
-
-    });
-
-  }
-
-};
-
 exports.getTasks = async (req, res) => {
 
   try {
 
-    const { userId } = req.query;
+    const userId =
+      req.user.id;
 
     const tasks =
       await Task.find({
-
         userId
-
       }).sort({
-
         createdAt: -1
-
       });
 
     res.json(tasks);
@@ -233,11 +166,14 @@ async (req, res) => {
 
 const io = req.app.get("io");
 
-io.emit("userUpdated")
+io.to(user._id.toString())
+  .emit("notificationUpdated");
 
-io.emit("notificationUpdated");
+io.to(user._id.toString())
+  .emit("transactionUpdated");
 
-io.emit("transactionUpdated");
+io.to(user._id.toString())
+  .emit("userUpdated");
 
     res.json({
 
@@ -357,11 +293,14 @@ user.totalEarned += benefits.adReward;
 
     const io = req.app.get("io");
 
-    io.emit("userUpdated")
+io.to(user._id.toString())
+  .emit("notificationUpdated");
 
-    io.emit("notificationUpdated");
+io.to(user._id.toString())
+  .emit("transactionUpdated");
 
-    io.emit("transactionUpdated");
+io.to(user._id.toString())
+  .emit("userUpdated");
 
     res.json({
 
@@ -473,11 +412,14 @@ user.totalEarned += reward;
 
     const io = req.app.get("io");
 
-    io.emit("userUpdated")
+io.to(user._id.toString())
+  .emit("notificationUpdated");
 
-    io.emit("notificationUpdated");
+io.to(user._id.toString())
+  .emit("transactionUpdated");
 
-    io.emit("transactionUpdated");
+io.to(user._id.toString())
+  .emit("userUpdated");
 
     res.json({
 

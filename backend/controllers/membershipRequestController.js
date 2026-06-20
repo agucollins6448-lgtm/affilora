@@ -78,8 +78,12 @@ async (req, res) => {
 
       const io = req.app.get("io");
 
-      io.emit("membershipUpdated");
-      io.emit("userUpdated");
+io.to(user._id.toString())
+  .emit("membershipUpdated");
+
+io.to(user._id.toString())
+  .emit("userUpdated");
+
     res.status(201).json({
       message:
         "Membership request submitted",
@@ -114,8 +118,12 @@ async (req, res) => {
 
     const io = req.app.get("io");
 
-        io.emit("membershipUpdated");
-        io.emit("userUpdated");
+io.to(user._id.toString())
+  .emit("membershipUpdated");
+
+io.to(user._id.toString())
+  .emit("userUpdated");
+
     res.json(requests);
 
   } catch (error) {
@@ -243,16 +251,15 @@ await AdminLog.create({
 const io = req.app.get("io");
 
 
-io.emit("notificationUpdated");
+io.to(user._id.toString())
+  .emit("notificationUpdated");
 
-io.emit(
-  "membershipUpdated",
-    approvedUser._id
-);
+io.to(user._id.toString())
+  .emit("membershipUpdated",
+    approvedUser._id);
 
-io.emit(
-  "userUpdated"
-);
+io.to(user._id.toString())
+  .emit("userUpdated");
 
 io.emit("adminLogUpdated");
 
@@ -352,15 +359,14 @@ await AdminLog.create({
 const io = req.app.get("io");
 
 
-io.emit("notificationUpdated");
+io.to(user._id.toString())
+  .emit("notificationUpdated");
 
-io.emit(
-  "membershipUpdated"
-);
+io.to(user._id.toString())
+  .emit("membershipUpdated");
 
-io.emit(
-  "userUpdated"
-);
+io.to(user._id.toString())
+  .emit("userUpdated");
 
 io.emit("adminLogUpdated");
 

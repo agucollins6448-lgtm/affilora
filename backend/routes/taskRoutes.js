@@ -4,9 +4,10 @@ require("express");
 const router =
 express.Router();
 
-const {
+const authMiddleware =
+require("../middleware/authMiddleware");
 
-  createTask,
+const {
 
   getTasks,
 
@@ -20,28 +21,27 @@ const {
   "../controllers/taskController"
 );
 
-router.post(
-  "/create",
-  createTask
-);
-
 router.get(
   "/all",
+  authMiddleware,
   getTasks
 );
 
 router.post(
   "/complete",
+  authMiddleware,
   completeTask
 );
 
 router.post(
   "/watch-ad",
+  authMiddleware,
   watchAdReward
 );
 
 router.post(
   "/survey-reward",
+  authMiddleware,
   surveyReward
 );
 

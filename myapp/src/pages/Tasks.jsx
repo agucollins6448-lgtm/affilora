@@ -202,47 +202,75 @@ const rewardAd = async () => {
 };
 
 const fetchData = async () => {
-    try {
-      const user = JSON.parse(localStorage.getItem("currentUser"));
 
-      const res = await API.get(
-        `/tasks/all?userId=${user._id}`
+  try {
+
+    const token =
+      localStorage.getItem("token");
+
+    const res =
+      await API.get(
+        "/tasks/all",
+        {
+          headers: {
+            Authorization:
+              `Bearer ${token}`
+          }
+        }
       );
 
-      const allTasks = res.data;
+    const allTasks =
+      res.data;
 
-      const completed = allTasks.filter(t => t.status === "completed");
-      const pending = allTasks.filter(t => t.status === "pending");
+    const completed =
+      allTasks.filter(
+        t => t.status === "completed"
+      );
 
-      const earnings = completed.reduce((sum, t) => sum + t.reward, 0);
-const token =
-  localStorage.getItem("token");
+    const pending =
+      allTasks.filter(
+        t => t.status === "pending"
+      );
 
-const walletRes =
-  await API.get(
-    `/auth/me`,
-    {
-      headers: {
-        Authorization:
-          `Bearer ${token}`
-      }
-    }
-  );
+    const earnings =
+      completed.reduce(
+        (sum, t) =>
+          sum + t.reward,
+        0
+      );
 
-setWalletData(
-  walletRes.data
-);
-      setTasks(allTasks);
-      setStats({
-        completed: completed.length,
-        pending: pending.length,
-        earnings
-      });
-console.log(allTasks)
-    } catch (err) {
-      console.log(err);
-    }
-  };
+    const walletRes =
+      await API.get(
+        "/auth/me",
+        {
+          headers: {
+            Authorization:
+              `Bearer ${token}`
+          }
+        }
+      );
+
+    setWalletData(
+      walletRes.data
+    );
+
+    setTasks(allTasks);
+
+    setStats({
+      completed:
+        completed.length,
+      pending:
+        pending.length,
+      earnings
+    });
+
+  } catch (err) {
+
+    console.log(err);
+
+  }
+
+};
 
     const fetchNotifications =
   async () => {
@@ -926,19 +954,12 @@ n.createdAt
       height: "45px"
     }}
   >
-    <img
-      src={
-        localStorage.getItem(
-  `profileImage_${currentUser?._id}`
-)
-
-          ? `http://localhost:5000/uploads/${localStorage.getItem(
-  `profileImage_${currentUser?._id}`
-)}`
-
-          : "https://i.pravatar.cc/100"
-      }
-      alt="Avatar"
+<img
+  src={
+    walletData?.profileImage ||
+    "https://i.pravatar.cc/100"
+  }
+  alt="Avatar"
       style={{
         width: "45px",
         height: "45px",
@@ -1013,12 +1034,7 @@ n.createdAt
 
           }
 
-          localStorage.setItem(
-  `profileImage_${currentUser?._id}`,
-  data.image
-);
-
-          window.location.reload();
+await fetchData();
 
         } catch (error) {
 
@@ -1079,7 +1095,7 @@ n.createdAt
         </div>
 
         {/* REVENUE STATUS SCORE CARDS */}
-        <div className="stats" style={styles.statsGrid}>
+        <div style={styles.statsGrid}>
           <div className="stat-card" style={styles.statCard}>
             <i className="fa-solid fa-check" style={styles.statIcon}></i>
             <h3 style={styles.statTitle}>Completed Tasks</h3>

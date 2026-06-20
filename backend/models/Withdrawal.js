@@ -30,9 +30,8 @@ const withdrawalSchema = new mongoose.Schema(
       default: "pending"
     },
 
-    receiptPath: {
-  type: String
-},
+receiptPath: String,
+receiptPublicId: String,
 
 
     reference: String

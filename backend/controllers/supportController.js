@@ -60,8 +60,11 @@ async (req, res) => {
 
       const io = req.app.get("io");
 
-      io.emit("ticketUpdated");
-      io.emit("userUpdated");
+io.to(user._id.toString())
+  .emit("ticketUpdated");
+
+io.to(user._id.toString())
+  .emit("userUpdated");
 
     res.status(201).json({
 
@@ -99,8 +102,12 @@ async (req, res) => {
       });
 
     const io = req.app.get("io");
-      io.emit("ticketupdated");
-      io.emit("UserUpdated")
+
+io.to(user._id.toString())
+  .emit("ticketUpdated");
+
+io.to(user._id.toString())
+  .emit("userUpdated");
     
     res.json(tickets);
 
@@ -168,12 +175,14 @@ if (!user) {
 
     const io = req.app.get("io");
 
+io.to(user._id.toString())
+  .emit("notificationUpdated");
 
-    io.emit("notificationUpdated");
+io.to(user._id.toString())
+  .emit("ticketUpdated");
 
-    io.emit("ticketUpdated");
-
-    io.emit("userUpdated");
+io.to(user._id.toString())
+  .emit("userUpdated");
 
     res.json({
       message:

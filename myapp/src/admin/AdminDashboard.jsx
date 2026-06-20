@@ -1,35 +1,8 @@
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  ArcElement,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend
-} from "chart.js";
-
-import {
-  Bar,
-  Pie,
-  Line
-} from "react-chartjs-2";
-
 import { useEffect, useState } from "react";
 import axios from "axios";
 import socket from "../socket";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  ArcElement,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend
-);
+
 
 export default function AdminDashboard({ setView, onLogout }) {
 
@@ -52,7 +25,6 @@ export default function AdminDashboard({ setView, onLogout }) {
   const [withdrawalStatusFilter, setWithdrawalStatusFilter] = useState("all");
   const [membershipStatusFilter, setMembershipStatusFilter] = useState("all");
   const [ticketStatusFilter, setTicketStatusFilter] = useState("all");
-  const [walletActionFilter, setWalletActionFilter] = useState("all");
   const [logFilter, setLogFilter] = useState("all");
   const [notificationFilter, setNotificationFilter] = useState("all");
   const [tickets, setTickets] = useState([]);
@@ -67,13 +39,11 @@ export default function AdminDashboard({ setView, onLogout }) {
   const [codeSearch, setCodeSearch] = useState("");
   const [ticketSearch, setTicketSearch] = useState("");
   const [notificationSearch, setNotificationSearch] = useState("");
-  const [walletHistorySearch, setWalletHistorySearch] = useState("");
   const [logSearch, setLogSearch] = useState("");
   const [selectedUserData, setSelectedUserData] = useState(null);
   const [walletAmount, setWalletAmount] = useState("");
   const [walletAction, setWalletAction] = useState("add");
   const [logs, setLogs] = useState([]);
-  const [walletHistory, setWalletHistory] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [userPage, setUserPage] = useState(1);
   const [transactionPage, setTransactionPage] = useState(1);
@@ -571,35 +541,6 @@ totalNotificationPages
 (_, i) => i + 1
 );
 
-const filteredWalletHistory =
-walletHistory.filter((h)=>{
-
-const matchesSearch =
-
-h.user?.fullName
-?.toLowerCase()
-.includes(
-walletHistorySearch
-.toLowerCase()
-);
-
-const matchesAction =
-
-walletActionFilter ===
-"all"
-
-? true
-
-: h.action ===
-walletActionFilter;
-
-return (
-matchesSearch &&
-matchesAction
-);
-
-});
-
 const filteredLogs =
 logs.filter((log) => {
 
@@ -745,180 +686,6 @@ const rejectedAmount =
       0
     );
 
-const membershipChartData = {
-  labels: [
-    "Starter",
-    "Bronze",
-    "Silver",
-    "Gold",
-    "Premium"
-  ],
-
-  datasets: [
-    {
-      data: [
-
-        users.filter(
-          u =>
-            u.membershipTier === "Starter"
-        ).length,
-
-        users.filter(
-          u =>
-            u.membershipTier === "Bronze"
-        ).length,
-
-        users.filter(
-          u =>
-            u.membershipTier === "Silver"
-        ).length,
-
-        users.filter(
-          u =>
-            u.membershipTier === "Gold"
-        ).length,
-
-        users.filter(
-          u =>
-            u.membershipTier === "Premium"
-        ).length
-      ],
-      backgroundColor: [
-        "#64748B", // Starter
-        "#CD7F32", // Bronze
-        "#C0C0C0", // Silver
-        "#FFD700", // Gold
-        "#8B5CF6"  // Premium
-      ]
-    }
-  ]
-};
-
-const earningsChartData = {
-
-  labels: [
-    "Ads",
-    "Referrals",
-    "Surveys",
-    "Withdrawals"
-  ],
-
-datasets: [
-  {
-    label: "Amount",
-
-    data: [
-      totalAds,
-      totalReferrals,
-      totalSurveys,
-      totalWithdrawalAmount
-    ],
-
-    backgroundColor: [
-      "#3B82F6", // Ads
-      "#22C55E", // Referrals
-      "#ea580c", // Surveys
-      "#EF4444"  // Withdrawals
-    ]
-  }
-]
-  
-};
-
-const topWalletUsers =
-  [...users]
-    .sort(
-      (a, b) =>
-        b.walletBalance -
-        a.walletBalance
-    )
-    .slice(0, 5);
-
-const walletChartData = {
-
-  labels:
-    topWalletUsers.map(
-      u => u.fullName
-    ),
-
- datasets: [
-  {
-    label: "Wallet Balance",
-
-    data:
-      topWalletUsers.map(
-        u => u.walletBalance
-      ),
-
-    backgroundColor: [
-      "#F4C451",
-      "#D4AF37",
-      "#C9A227",
-      "#B8860B",
-      "#996515"
-    ]
-  }
-]
-  
-};
-
-const monthlyUsers = {};
-
-users.forEach(user => {
-
-  const month =
-    new Date(
-      user.createdAt
-    ).toLocaleString(
-      "default",
-      {
-        month: "short"
-      }
-    );
-
-  monthlyUsers[month] =
-    (monthlyUsers[month] || 0) + 1;
-
-});
-
-const userGrowthData = {
-
-  labels:
-    Object.keys(
-      monthlyUsers
-    ),
-
-datasets: [
-  {
-    label: "New Users",
-
-    data:
-      Object.values(
-        monthlyUsers
-      ),
-
-    borderColor: "#22C55E",
-
-    backgroundColor:
-      "rgba(34,197,94,0.2)",
-
-    tension: 0.4,
-
-    fill: true
-  }
-]
-};
-
-const chartOptions = {
-  responsive: true,
-
-  plugins: {
-    legend: {
-      position: "bottom"
-    }
-  }
-};
-
   const fetchUsers = async () => {
     const res = await axios.get(
       "http://localhost:5000/api/admin/users",
@@ -1054,26 +821,6 @@ async () => {
 
 };
 
-const fetchWalletHistory =
-async () => {
-
-  const res =
-    await axios.get(
-      "http://localhost:5000/api/admin/wallet-history",
-      {
-        headers: {
-          Authorization:
-            `Bearer ${token}`
-        }
-      }
-    );
-
-  setWalletHistory(
-    res.data
-  );
-
-};
-
 useEffect(() => {
 
   if (!token) return;
@@ -1086,8 +833,6 @@ useEffect(() => {
   fetchTickets();
   fetchNotifications();
   fetchLogs();
-  fetchWalletHistory();
-
 }, [token]);
 
 useEffect(() => {
@@ -1123,11 +868,6 @@ socket.on(
 );
 
 socket.on(
-  "walletHistoryUpdated",
-  fetchWalletHistory
-);
-
-socket.on(
   "adminLogUpdated",
   fetchLogs
 );
@@ -1156,10 +896,6 @@ return () => {
 
   socket.off(
     "transactionUpdated"
-  );
-
-  socket.off(
-    "walletHistoryUpdated"
   );
 
   socket.off(
@@ -1247,6 +983,16 @@ const filteredUsers = users
         ?.toLowerCase()
         .includes(
           search.toLowerCase()
+        ) ||
+        user.username
+        ?.toLowerCase()
+        .includes(
+          search.toLowerCase()
+        ) ||
+        user.phone
+        ?.toLowerCase()
+        .includes(
+          search.toLowerCase()
         );
 
     const matchesTier =
@@ -1310,145 +1056,6 @@ const userPageNumbers =
 
 
 /* ═════════════════════════════════════════
-   THEME / DESIGN TOKENS
-   ═════════════════════════════════════════ */
-const fonts = {
-  heading: "'Space Grotesk', sans-serif",
-  body: "'DM Sans', sans-serif",
-};
-
-const colors = {
-  bg: "#0a0a1a",
-  surface: "#141432",
-  surfaceElevated: "#1e1e5a",
-  accent: "#4f46e5",
-  accentHover: "#4338ca",
-  textPrimary: "#f8fafc",
-  textSecondary: "#94a3b8",
-  border: "rgba(148, 163, 184, 0.12)",
-  success: "#22c55e",
-  warning: "#f59e0b",
-  danger: "#ef4444",
-  info: "#3b82f6",
-  purple: "#a855f7",
-  bronze: "#cd7f32",
-  silver: "#c0c0c0",
-  gold: "#eab308",
-  premium: "#8b5cf6",
-  starter: "#64748b",
-};
-
-const radius = {
-  sm: "6px",
-  md: "10px",
-  lg: "14px",
-  xl: "18px",
-};
-
-const shadow = "0 10px 30px -8px rgba(0,0,0,0.45)";
-const shadowSm = "0 4px 12px rgba(0,0,0,0.25)";
-
-const globalStyle = {
-  fontFamily: fonts.body,
-  color: colors.textPrimary,
-  lineHeight: 1.5,
-};
-
-/* ── Reusable card shell ── */
-const makeCard = (accentColor) => ({
-  background: colors.surface,
-  color: colors.textPrimary,
-  padding: "22px",
-  borderRadius: radius.lg,
-  boxShadow: shadowSm,
-  borderLeft: `4px solid ${accentColor}`,
-  transition: "transform 0.2s ease, box-shadow 0.2s ease",
-});
-
-const cardStyle = makeCard(colors.accent);
-const greenCard = makeCard(colors.success);
-const orangeCard = makeCard(colors.warning);
-const redCard = makeCard(colors.danger);
-const purpleCard = makeCard(colors.purple);
-const starterCard = makeCard(colors.starter);
-const bronzeCard = makeCard(colors.bronze);
-const silverCard = makeCard(colors.silver);
-const goldCard = makeCard(colors.gold);
-const premiumCard = makeCard(colors.premium);
-
-/* ── Inputs ── */
-const inputStyle = {
-  padding: "10px 14px",
-  borderRadius: radius.md,
-  border: `1px solid ${colors.border}`,
-  background: colors.surfaceElevated,
-  color: colors.textPrimary,
-  fontFamily: fonts.body,
-  fontSize: "0.95rem",
-  outline: "none",
-  minWidth: "200px",
-};
-
-const selectStyle = {
-  ...inputStyle,
-  cursor: "pointer",
-};
-
-/* ── Buttons ── */
-const btnBase = {
-  padding: "10px 18px",
-  borderRadius: radius.md,
-  border: "none",
-  fontFamily: fonts.body,
-  fontWeight: 600,
-  fontSize: "0.9rem",
-  cursor: "pointer",
-  transition: "background 0.2s ease, transform 0.1s ease",
-};
-
-const btnPrimary = { ...btnBase, background: colors.accent, color: "#fff" };
-const btnDanger = { ...btnBase, background: colors.danger, color: "#fff" };
-const btnSuccess = { ...btnBase, background: colors.success, color: "#fff" };
-const btnGhost = {
-  ...btnBase,
-  background: "transparent",
-  color: colors.textSecondary,
-  border: `1px solid ${colors.border}`,
-};
-
-/* ── Table / list rows ── */
-const rowBase = {
-  padding: "14px 18px",
-  background: colors.surface,
-  borderRadius: radius.md,
-  marginBottom: "10px",
-  boxShadow: shadowSm,
-  color: colors.textPrimary,
-};
-
-/* ── Chart container ── */
-const chartBox = {
-  background: colors.surface,
-  padding: "24px",
-  marginTop: "28px",
-  borderRadius: radius.lg,
-  boxShadow: shadow,
-};
-
-/* ── Pagination ── */
-const pageBtn = (active) => ({
-  padding: "8px 14px",
-  borderRadius: radius.md,
-  border: `1px solid ${colors.border}`,
-  background: active ? colors.accent : colors.surface,
-  color: active ? "#fff" : colors.textPrimary,
-  fontWeight: active ? 700 : 500,
-  cursor: "pointer",
-  fontFamily: fonts.body,
-  transition: "background 0.2s ease",
-});
-
-/* ═════════════════════════════════════════
    COMPONENT
    ═════════════════════════════════════════ */
 
@@ -1460,34 +1067,10 @@ const pageBtn = (active) => ({
         rel="stylesheet"
       />
 
-      <div style={{ display: "flex", minHeight: "100vh", ...globalStyle, background: colors.bg }}>
+      <div className="globalStyle global">
         {/* ═══════ SIDEBAR ═══════ */}
-        <aside
-          style={{
-            width: "260px",
-            background: colors.surface,
-            color: colors.textPrimary,
-            padding: "24px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "6px",
-            boxShadow: "4px 0 24px rgba(0,0,0,0.35)",
-            position: "sticky",
-            top: 0,
-            height: "101vh",
-            overflowY: "auto",
-          }}
-        >
-          <h2
-            style={{
-              fontFamily: fonts.heading,
-              fontSize: "1.35rem",
-              fontWeight: 700,
-              letterSpacing: "0.5px",
-              marginBottom: "20px",
-              color: colors.accent,
-            }}
-          >
+        <aside>
+          <h2 className="adminText">
             ADMIN PANEL
           </h2>
 
@@ -1501,77 +1084,45 @@ const pageBtn = (active) => ({
             { key: "support", label: "Support Tickets" },
             { key: "notifications", label: "Notifications" },
             { key: "logs", label: "Activity Logs" },
-            { key: "reports", label: "Reports" },
-            { key: "walletHistory", label: "Wallet History" },
             { key: "security", label: "Security" },
           ].map((item) => (
-            <button
-              key={item.key}
+            <button 
+              key={item.key}              
+              className={`sidebarBtn ${tab === item.key ? "active" : "" }`}
               onClick={() => setTab(item.key)}
-              style={{
-                textAlign: "left",
-                padding: "12px 14px",
-                borderRadius: radius.md,
-                border: "none",
-                background: tab === item.key ? colors.accent : "transparent",
-                color: tab === item.key ? "#fff" : colors.textSecondary,
-                fontFamily: fonts.body,
-                fontWeight: 500,
-                fontSize: "0.95rem",
-                cursor: "pointer",
-                transition: "all 0.2s ease",
-              }}
-              onMouseEnter={(e) => {
-                if (tab !== item.key) e.currentTarget.style.background = colors.surfaceElevated;
-              }}
-              onMouseLeave={(e) => {
-                if (tab !== item.key) e.currentTarget.style.background = "transparent";
-              }}
             >
               {item.label}
             </button>
           ))}
 
-          <button
+          <button className="btnBase btnDanger logout"
             onClick={onLogout}
-            style={{
-              marginTop: "auto",
-              ...btnDanger,
-              width: "100%",
-              textAlign: "left",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-            }}
           >
             Logout
           </button>
         </aside>
 
         {/* ═══════ MAIN ═══════ */}
-        <main style={{ flex: 1, padding: "28px 32px", overflowX: "hidden" }}>
+        <main>
           {/* Status + Page size */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "24px",
-              flexWrap: "wrap",
-              gap: "12px",
-            }}
-          >
-            <p style={{ fontWeight: 500, color: colors.textSecondary }}>
+          <div className="stat">
+            <p className="status">
               Status:{" "}
-              <span style={{ color: connected ? colors.success : colors.danger, fontWeight: 700 }}>
-                {connected ? "Live" : "Offline"}
-              </span>
+            <span
+              className={
+                connected
+                  ? "statusLive"
+                  : "statusOffline"
+              }
+            >
+              {connected ? "Live" : "Offline"}
+            </span>
             </p>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <span style={{ color: colors.textSecondary, fontSize: "0.9rem" }}>Show:</span>
+            <div className="pgSz">
+              <span className="show">Show:</span>
               <select
-                style={selectStyle}
+                className="inputStyle selectStyle"
                 value={itemsPerPage}
                 onChange={(e) => {
                   const val = Number(e.target.value);
@@ -1595,125 +1146,103 @@ const pageBtn = (active) => ({
 
           {/* ═══════ OVERVIEW ═══════ */}
           {tab === "overview" && (
-            <div>
-              <h1 style={{ fontFamily: fonts.heading, fontSize: "1.8rem", fontWeight: 700, marginBottom: "24px" }}>
+            <div className="overview">
+              <h1 className="sysOv">
                 System Overview
               </h1>
 
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-                  gap: "20px",
-                }}
-              >
-                <div style={cardStyle}>
-                  <h3 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "1px", color: colors.textSecondary, marginBottom: "8px" }}>
+              <div className="cards">
+                <div className="makeCard cardStyle">
+                  <h3 className="totUs">
                     Total Users
                   </h3>
-                  <h1 style={{ fontFamily: fonts.heading, fontSize: "2rem", fontWeight: 700 }}>{totalUsers}</h1>
+                  <h1 className="cardValues">{totalUsers}</h1>
                 </div>
-                <div style={redCard}>
-                  <h3 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "1px", color: colors.textSecondary, marginBottom: "8px" }}>
+                <div className="makeCard redCard">
+                  <h3 className="cardText">
                     Banned Users
                   </h3>
-                  <h1 style={{ fontFamily: fonts.heading, fontSize: "2rem", fontWeight: 700 }}>{bannedUsers}</h1>
+                  <h1 className="cardValues">{bannedUsers}</h1>
                 </div>
-                <div style={cardStyle}>
-                  <h3 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "1px", color: colors.textSecondary, marginBottom: "8px" }}>
+                <div className="makeCard cardStyle">
+                  <h3 className="cardText">
                     Active Members
                   </h3>
-                  <h1 style={{ fontFamily: fonts.heading, fontSize: "2rem", fontWeight: 700 }}>{activeMembers}</h1>
+                  <h1 className="cardValues">{activeMembers}</h1>
                 </div>
-                <div style={greenCard}>
-                  <h3 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "1px", color: colors.textSecondary, marginBottom: "8px" }}>
+                <div className="makeCard greenCard">
+                  <h3 className="cardText">
                     Total Revenue
                   </h3>
-                  <h1 style={{ fontFamily: fonts.heading, fontSize: "2rem", fontWeight: 700 }}>₦{totalRevenue.toLocaleString()}</h1>
+                  <h1 className="cardValues">₦{totalRevenue.toLocaleString()}</h1>
                 </div>
-                <div style={purpleCard}>
-                  <h3 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "1px", color: colors.textSecondary, marginBottom: "8px" }}>
+                <div className="makeCard purpleCard">
+                  <h3 className="cardText">
                     Pending Memberships
                   </h3>
-                  <h1 style={{ fontFamily: fonts.heading, fontSize: "2rem", fontWeight: 700 }}>{totalMembershipRequests}</h1>
+                  <h1 className="cardValues">{totalMembershipRequests}</h1>
                 </div>
-                <div style={orangeCard}>
-                  <h3 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "1px", color: colors.textSecondary, marginBottom: "8px" }}>
+                <div className="makeCard orangeCard">
+                  <h3 className="cardText">
                     Pending Withdrawals
                   </h3>
-                  <h1 style={{ fontFamily: fonts.heading, fontSize: "2rem", fontWeight: 700 }}>{pendingWithdrawals}</h1>
+                  <h1 className="cardValues">{pendingWithdrawals}</h1>
                 </div>
-                <div style={greenCard}>
-                  <h3 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "1px", color: colors.textSecondary, marginBottom: "8px" }}>
+                <div className="makeCard greenCard">
+                  <h3 className="cardText">
                     Approved Withdrawals
                   </h3>
-                  <h1 style={{ fontFamily: fonts.heading, fontSize: "2rem", fontWeight: 700 }}>{approvedWithdrawals}</h1>
+                  <h1 className="cardValues">{approvedWithdrawals}</h1>
                 </div>
-                <div style={redCard}>
-                  <h3 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "1px", color: colors.textSecondary, marginBottom: "8px" }}>
+                <div className="makeCard redCard">
+                  <h3 className="cardText">
                     Total Withdrawn
                   </h3>
-                  <h1 style={{ fontFamily: fonts.heading, fontSize: "2rem", fontWeight: 700 }}>₦{totalWithdrawn.toLocaleString()}</h1>
+                  <h1 className="cardValues">₦{totalWithdrawn.toLocaleString()}</h1>
                 </div>
-                <div style={redCard}>
-                  <h3 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "1px", color: colors.textSecondary, marginBottom: "8px" }}>
+                <div className="makeCard redCard">
+                  <h3 className="cardText">
                     Withdrawal Volume
                   </h3>
-                  <h2 style={{ fontFamily: fonts.heading, fontSize: "1.6rem", fontWeight: 700 }}>₦{totalWithdrawalAmount.toLocaleString()}</h2>
+                  <h1 className="cardValues">₦{totalWithdrawalAmount.toLocaleString()}</h1>
                 </div>
-                <div style={cardStyle}>
-                  <h3 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "1px", color: colors.textSecondary, marginBottom: "8px" }}>
+                <div className="makeCard cardStyle">
+                  <h3 className="cardText">
                     Wallet Balances
                   </h3>
-                  <h1 style={{ fontFamily: fonts.heading, fontSize: "2rem", fontWeight: 700 }}>₦{totalWalletBalance.toLocaleString()}</h1>
+                  <h1 className="cardValues">₦{totalWalletBalance.toLocaleString()}</h1>
                 </div>
-                <div style={cardStyle}>
-                  <h3 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "1px", color: colors.textSecondary, marginBottom: "8px" }}>
+                <div className="makeCard cardStyle">
+                  <h3 className="cardText">
                     Ad Rewards
                   </h3>
-                  <h2 style={{ fontFamily: fonts.heading, fontSize: "1.6rem", fontWeight: 700 }}>₦{totalAds.toLocaleString()}</h2>
+                  <h1 className="cardValues">₦{totalAds.toLocaleString()}</h1>
                 </div>
-                <div style={greenCard}>
-                  <h3 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "1px", color: colors.textSecondary, marginBottom: "8px" }}>
+                <div className="makeCard orangeCard">
+                  <h3 className="cardText">
+                    Survey Rewards
+                  </h3>                  
+                  <h1 className="cardValues">₦{totalSurveys.toLocaleString()}</h1>
+                </div>
+                <div className="makeCard greenCard">
+                  <h3 className="cardText">
                     Referral Bonuses
                   </h3>
-                  <h2 style={{ fontFamily: fonts.heading, fontSize: "1.6rem", fontWeight: 700 }}>₦{totalReferrals.toLocaleString()}</h2>
+                  <h1 className="cardValues">₦{totalReferrals.toLocaleString()}</h1>
+                
                 </div>
-                <div style={orangeCard}>
-                  <h3 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "1px", color: colors.textSecondary, marginBottom: "8px" }}>
-                    Survey Rewards
-                  </h3>
-                  <h2 style={{ fontFamily: fonts.heading, fontSize: "1.6rem", fontWeight: 700 }}>₦{totalSurveys.toLocaleString()}</h2>
-                </div>
-                <div style={orangeCard}>
-                  <h3 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "1px", color: colors.textSecondary, marginBottom: "8px" }}>
+                <div className="makeCard orangeCard">
+                  <h3 className="cardText">
                     Open Support Tickets
                   </h3>
-                  <h1 style={{ fontFamily: fonts.heading, fontSize: "2rem", fontWeight: 700 }}>{openSupportTickets}</h1>
+                  <h1 className="cardValues">{openSupportTickets}</h1>
                 </div>
-                <div style={redCard}>
-                  <h3 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "1px", color: colors.textSecondary, marginBottom: "8px" }}>
+                <div className="makeCard redCard">
+                  <h3 className="cardText">
                     Action Required
                   </h3>
-                  <h1 style={{ fontFamily: fonts.heading, fontSize: "2rem", fontWeight: 700 }}>{actionRequired}</h1>
+                  <h1 className="cardValues">{actionRequired}</h1>
                 </div>
-              </div>
-
-              <div style={chartBox}>
-                <h2 style={{ fontFamily: fonts.heading, fontSize: "1.25rem", marginBottom: "16px" }}>Earnings Analytics</h2>
-                <Bar data={earningsChartData} options={chartOptions} />
-              </div>
-              <div style={chartBox}>
-                <h2 style={{ fontFamily: fonts.heading, fontSize: "1.25rem", marginBottom: "16px" }}>Membership Distribution</h2>
-                <Pie data={membershipChartData} options={chartOptions} />
-              </div>
-              <div style={chartBox}>
-                <h2 style={{ fontFamily: fonts.heading, fontSize: "1.25rem", marginBottom: "16px" }}>Top Wallet Holders</h2>
-                <Bar data={walletChartData} options={chartOptions} />
-              </div>
-              <div style={chartBox}>
-                <h2 style={{ fontFamily: fonts.heading, fontSize: "1.25rem", marginBottom: "16px" }}>User Growth</h2>
-                <Line data={userGrowthData} options={chartOptions} />
               </div>
             </div>
           )}
@@ -1721,17 +1250,17 @@ const pageBtn = (active) => ({
           {/* ═══════ USERS ═══════ */}
           {tab === "users" && (
             <div>
-              <h1 style={{ fontFamily: fonts.heading, fontSize: "1.8rem", fontWeight: 700, marginBottom: "20px" }}>Users</h1>
+              <h1 className="tab">Users</h1>
 
-              <div style={{ display: "flex", gap: "12px", marginBottom: "20px", flexWrap: "wrap", alignItems: "center" }}>
+              <div className="seFiSo">
                 <input
                   type="text"
                   placeholder="Search user..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  style={{ ...inputStyle, minWidth: "240px" }}
+                  className="inputStyle se"
                 />
-                <select style={selectStyle} value={tierFilter} onChange={(e) => setTierFilter(e.target.value)}>
+                <select className="inputStyle selectStyle" value={tierFilter} onChange={(e) => setTierFilter(e.target.value)}>
                   <option value="all">All Tiers</option>
                   <option value="Starter">Starter</option>
                   <option value="Bronze">Bronze</option>
@@ -1739,30 +1268,43 @@ const pageBtn = (active) => ({
                   <option value="Gold">Gold</option>
                   <option value="Premium">Premium</option>
                 </select>
-                <select style={selectStyle} value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                <select className="inputStyle selectStyle" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
                   <option value="newest">Newest</option>
                   <option value="balance">Highest Balance</option>
                   <option value="referrals">Most Referrals</option>
                 </select>
               </div>
 
-              <p style={{ color: colors.textSecondary, marginBottom: "16px" }}>
+              <p className="showing">
                 Showing {currentUsers.length} of {filteredUsers.length} users
               </p>
 
               {currentUsers.map((u) => (
-                <div key={u._id} style={rowBase}>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "8px", marginBottom: "12px" }}>
-                    <p><strong style={{ color: colors.textSecondary }}>Name:</strong> {u.fullName}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Email:</strong> {u.email}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Tier:</strong> {u.membershipTier}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Balance:</strong> ₦{u.walletBalance}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Referrals:</strong> {u.referralsCount}</p>
+                <div key={u._id} className="rowBase">
+                  <div className="usLi">
+                    <p><strong className="usText">Name:</strong> {u.fullName}</p>
+                    <p><strong className="usText">Email:</strong> {u.email}</p>
+                    <p><strong className="usText">Tier:</strong> {u.membershipTier}</p>
+                    <p><strong className="usText">Balance:</strong> ₦{u.walletBalance}</p>
+                    <p><strong className="usText">Referrals:</strong> {u.referralsCount}</p>
                   </div>
-                  <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                  <div className="usButtons">
                     <button
-                      style={btnDanger}
+                      className="btnBase btnDanger"
                       onClick={async () => {
+                          const confirmDelete =
+                          window.confirm(
+                            "Are you sure you want to delete this user?"
+                          );
+
+                        if (!confirmDelete) return;
+
+                        const text = prompt(
+                        'Type DELETE to confirm your action'
+                      );
+
+                      if (text !== "DELETE") return;
+
                         await axios.delete(`http://localhost:5000/api/admin/users/${u._id}`, {
                           headers: { Authorization: `Bearer ${token}` },
                         });
@@ -1773,7 +1315,7 @@ const pageBtn = (active) => ({
                       Delete User
                     </button>
                     <button
-                      style={btnGhost}
+                      className="btnBase btnGhost"
                       onClick={async () => {
                         await axios.put(
                           `http://localhost:5000/api/admin/users/toggle-membership/${u._id}`,
@@ -1786,8 +1328,27 @@ const pageBtn = (active) => ({
                     >
                       Toggle Active
                     </button>
+
                     <button
-                      style={btnGhost}
+                      className="btnBase btnGhost"
+                      onClick={async () => {
+                        await axios.put(
+                          `http://localhost:5000/api/admin/users/membership-reset/${u._id}`,
+                          {},
+                          { headers: { Authorization: `Bearer ${token}` } }
+                        );
+                        if (u.membershipTier === "Starter"){
+                          return;
+                        }
+                        alert("Membership Reset");
+                        fetchUsers();
+                      }}
+                    >
+                      Reset Membership
+                    </button>
+
+                    <button
+                      className="btnBase btnGhost"
                       onClick={async () => {
                         await axios.put(
                           `http://localhost:5000/api/admin/users/ban/${u._id}`,
@@ -1801,7 +1362,7 @@ const pageBtn = (active) => ({
                       Ban / Unban
                     </button>
                     <button
-                      style={btnPrimary}
+                      className="btnBase btnPrimary"
                       onClick={() => {
                         setSelectedUserData(u);
                         setTab("userDetails");
@@ -1809,41 +1370,24 @@ const pageBtn = (active) => ({
                     >
                       View User
                     </button>
-                    <button
-                      style={btnGhost}
-                      onClick={async () => {
-                        const res = await axios.get(`http://localhost:5000/api/admin/reports/user/${u._id}`, {
-                          headers: { Authorization: `Bearer ${token}` },
-                          responseType: "blob",
-                        });
-                        const url = window.URL.createObjectURL(new Blob([res.data]));
-                        const link = document.createElement("a");
-                        link.href = url;
-                        link.setAttribute("download", `${u.username}-report.pdf`);
-                        document.body.appendChild(link);
-                        link.click();
-                      }}
-                    >
-                      Download PDF
-                    </button>
                   </div>
                 </div>
               ))}
 
               {filteredUsers.length === 0 && (
-                <div style={{ textAlign: "center", padding: "40px", color: colors.textSecondary }}>No users found</div>
+                <div className="noFound">No users found</div>
               )}
 
-              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", marginTop: "24px", flexWrap: "wrap" }}>
-                <button style={btnGhost} disabled={userPage === 1} onClick={() => setUserPage(userPage - 1)}>
+              <div className="paginButtons">
+                <button className="btnBase btnGhost" disabled={userPage === 1} onClick={() => setUserPage(userPage - 1)}>
                   Previous
                 </button>
                 {userPageNumbers.map((page) => (
-                  <button key={page} onClick={() => setUserPage(page)} style={pageBtn(userPage === page)}>
+                  <button key={page} onClick={() => setUserPage(page)} className={`pageBtn ${userPage === page ? "active" : ""}`}>
                     {page}
                   </button>
                 ))}
-                <button style={btnGhost} disabled={userPage === totalUserPages} onClick={() => setUserPage(userPage + 1)}>
+                <button className="btnBase btnGhost" disabled={userPage === totalUserPages} onClick={() => setUserPage(userPage + 1)}>
                   Next
                 </button>
               </div>
@@ -1853,18 +1397,18 @@ const pageBtn = (active) => ({
           {/* ═══════ WITHDRAWALS ═══════ */}
           {tab === "withdrawals" && (
             <div>
-              <h1 style={{ fontFamily: fonts.heading, fontSize: "1.8rem", fontWeight: 700, marginBottom: "20px" }}>Withdrawals</h1>
+              <h1 className="tab">Withdrawals</h1>
 
-              <div style={{ display: "flex", gap: "12px", marginBottom: "20px", flexWrap: "wrap", alignItems: "center" }}>
+              <div className="seFiSo">
                 <input
                   type="text"
                   placeholder="Search withdrawals..."
                   value={withdrawalSearch}
                   onChange={(e) => setWithdrawalSearch(e.target.value)}
-                  style={{ ...inputStyle, minWidth: "240px" }}
+                  className="inputStyle se"
                 />
                 <select
-                  style={selectStyle}
+                  className="inputStyle selectStyle"
                   value={withdrawalStatusFilter}
                   onChange={(e) => setWithdrawalStatusFilter(e.target.value)}
                 >
@@ -1875,53 +1419,46 @@ const pageBtn = (active) => ({
                 </select>
               </div>
 
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-                  gap: "20px",
-                  marginBottom: "24px",
-                }}
-              >
-                <div style={cardStyle}>
-                  <h3 style={{ fontSize: "0.8rem", textTransform: "uppercase", color: colors.textSecondary, letterSpacing: "1px" }}>Total Paid Out</h3>
-                  <h2 style={{ fontFamily: fonts.heading, fontSize: "1.6rem", fontWeight: 700, marginTop: "8px" }}>₦{totalWithdrawn}</h2>
+              <div className="wiCard">
+                <div className="makeCard cardStyle">
+                  <h3 className="cardDesc">Total Paid Out</h3>
+                  <h2 className="incardValues">₦{totalWithdrawn}</h2>
                 </div>
-                <div style={orangeCard}>
-                  <h3 style={{ fontSize: "0.8rem", textTransform: "uppercase", color: colors.textSecondary, letterSpacing: "1px" }}>Pending Amount</h3>
-                  <h2 style={{ fontFamily: fonts.heading, fontSize: "1.6rem", fontWeight: 700, marginTop: "8px" }}>₦{pendingAmount}</h2>
+                <div className="makeCard orangeCard">
+                  <h3 className="cardDesc">Pending Amount</h3>
+                  <h2 className="incardValues">₦{pendingAmount}</h2>
                 </div>
-                <div style={greenCard}>
-                  <h3 style={{ fontSize: "0.8rem", textTransform: "uppercase", color: colors.textSecondary, letterSpacing: "1px" }}>Approved Amount</h3>
-                  <h2 style={{ fontFamily: fonts.heading, fontSize: "1.6rem", fontWeight: 700, marginTop: "8px" }}>₦{approvedAmount}</h2>
+                <div className="makeCard greenCard">
+                  <h3 className="cardDesc">Approved Amount</h3>
+                  <h2 className="incardValues">₦{approvedAmount}</h2>
                 </div>
-                <div style={redCard}>
-                  <h3 style={{ fontSize: "0.8rem", textTransform: "uppercase", color: colors.textSecondary, letterSpacing: "1px" }}>Rejected Amount</h3>
-                  <h2 style={{ fontFamily: fonts.heading, fontSize: "1.6rem", fontWeight: 700, marginTop: "8px" }}>₦{rejectedAmount}</h2>
+                <div className="makeCard redCard">
+                  <h3 className="cardDesc">Rejected Amount</h3>
+                  <h2 className="incardValues">₦{rejectedAmount}</h2>
                 </div>
               </div>
 
-              <p style={{ color: colors.textSecondary, marginBottom: "16px" }}>
+              <p className="showing">
                 Showing {currentWithdrawals.length} of {filteredWithdrawals.length} withdrawals
               </p>
 
               {currentWithdrawals.map((w) => (
-                <div key={w._id} style={rowBase}>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "8px", marginBottom: "12px" }}>
-                    <p><strong style={{ color: colors.textSecondary }}>Name:</strong> {w.user?.fullName}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Email:</strong> {w.user?.email}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Tier:</strong> {w.user?.membershipTier}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Amount:</strong> ₦{w.amount}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Bank:</strong> {w.bankName}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Account Name:</strong> {w.accountName}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Account Number:</strong> {w.accountNumber}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Slip:</strong> {w.slipNumber}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Status:</strong> {w.status}</p>
+                <div key={w._id} className="rowBase">
+                  <div className="usLi">
+                    <p><strong className="usText">Name:</strong> {w.user?.fullName}</p>
+                    <p><strong className="usText">Email:</strong> {w.user?.email}</p>
+                    <p><strong className="usText">Tier:</strong> {w.user?.membershipTier}</p>
+                    <p><strong className="usText">Amount:</strong> ₦{w.amount}</p>
+                    <p><strong className="usText">Bank:</strong> {w.bankName}</p>
+                    <p><strong className="usText">Account Name:</strong> {w.accountName}</p>
+                    <p><strong className="usText">Account Number:</strong> {w.accountNumber}</p>
+                    <p><strong className="usText">Slip:</strong> {w.slipNumber}</p>
+                    <p><strong className="usText">Status: </strong><span   className={`${w.status === "success" ? "appr" : w.status === "pending" ? "pendi" : "rejec"}`}>{w.status}</span></p>
                   </div>
                   {w.status === "pending" && (
-                    <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                    <div className="usButtons">
                       <button
-                        style={btnSuccess}
+                        className="btnBase btnSuccess"
                         onClick={async () => {
                           await axios.put(
                             `http://localhost:5000/api/withdrawals/approve/${w._id}`,
@@ -1934,7 +1471,7 @@ const pageBtn = (active) => ({
                         Approve
                       </button>
                       <button
-                        style={btnDanger}
+                        className="btnBase btnDanger"
                         onClick={async () => {
                           await axios.put(
                             `http://localhost:5000/api/withdrawals/reject/${w._id}`,
@@ -1952,20 +1489,20 @@ const pageBtn = (active) => ({
               ))}
 
               {filteredWithdrawals.length === 0 && (
-                <div style={{ textAlign: "center", padding: "40px", color: colors.textSecondary }}>No withdrawals found</div>
+                <div className="noFound">No withdrawals found</div>
               )}
 
-              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", marginTop: "24px", flexWrap: "wrap" }}>
-                <button style={btnGhost} disabled={withdrawalPage === 1} onClick={() => setWithdrawalPage(withdrawalPage - 1)}>
+              <div className="paginButtons">
+                <button className="btnBase btnGhost" disabled={withdrawalPage === 1} onClick={() => setWithdrawalPage(withdrawalPage - 1)}>
                   Previous
                 </button>
                 {withdrawalPageNumbers.map((page) => (
-                  <button key={page} onClick={() => setWithdrawalPage(page)} style={pageBtn(withdrawalPage === page)}>
+                  <button key={page} onClick={() => setWithdrawalPage(page)} className={`pageBtn ${withdrawalPage === page ? "active" : ""}`}>
                     {page}
                   </button>
                 ))}
                 <button
-                  style={btnGhost}
+                  className="btnBase btnGhost"
                   disabled={withdrawalPage === totalWithdrawalPages}
                   onClick={() => setWithdrawalPage(withdrawalPage + 1)}
                 >
@@ -1978,19 +1515,19 @@ const pageBtn = (active) => ({
           {/* ═══════ MEMBERSHIP REQUESTS ═══════ */}
           {tab === "membershipRequests" && (
             <div>
-              <h1 style={{ fontFamily: fonts.heading, fontSize: "1.8rem", fontWeight: 700, marginBottom: "20px" }}>
+              <h1 className="tab">
                 Membership Requests
               </h1>
 
-              <div style={{ display: "flex", gap: "12px", marginBottom: "20px", flexWrap: "wrap", alignItems: "center" }}>
+              <div className="seFiSo">
                 <input
                   placeholder="Search requests..."
                   value={membershipSearch}
                   onChange={(e) => setMembershipSearch(e.target.value)}
-                  style={{ ...inputStyle, minWidth: "240px" }}
+                  className="inputStyle se"
                 />
                 <select
-                  style={selectStyle}
+                  className="inputStyle selectStyle"
                   value={membershipStatusFilter}
                   onChange={(e) => setMembershipStatusFilter(e.target.value)}
                 >
@@ -2001,53 +1538,48 @@ const pageBtn = (active) => ({
                 </select>
               </div>
 
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-                  gap: "16px",
-                  marginBottom: "24px",
-                }}
-              >
-                <div style={starterCard}>
-                  <h3 style={{ fontSize: "0.8rem", textTransform: "uppercase", color: colors.textSecondary, letterSpacing: "1px" }}>Starter Members</h3>
-                  <h1 style={{ fontFamily: fonts.heading, fontSize: "1.8rem", fontWeight: 700, marginTop: "8px" }}>{starterCount}</h1>
+              <div className="memCard">
+                <div className="makeCard starterCard">
+                  <h3 className="cardDesc">Starter Members</h3>
+                  <h1 className="memValues">{starterCount}</h1>
                 </div>
-                <div style={bronzeCard}>
-                  <h3 style={{ fontSize: "0.8rem", textTransform: "uppercase", color: colors.textSecondary, letterSpacing: "1px" }}>Bronze Members</h3>
-                  <h1 style={{ fontFamily: fonts.heading, fontSize: "1.8rem", fontWeight: 700, marginTop: "8px" }}>{bronzeCount}</h1>
+                <div className="makeCard bronzeCard">
+                  <h3 className="cardDesc">Bronze Members</h3>
+                  <h1 className="memValues">{bronzeCount}</h1>
                 </div>
-                <div style={silverCard}>
-                  <h3 style={{ fontSize: "0.8rem", textTransform: "uppercase", color: colors.textSecondary, letterSpacing: "1px" }}>Silver Members</h3>
-                  <h1 style={{ fontFamily: fonts.heading, fontSize: "1.8rem", fontWeight: 700, marginTop: "8px" }}>{silverCount}</h1>
+                <div className="makeCard silverCard">
+                  <h3 className="cardDesc">Silver Members</h3>
+                  <h1 className="memValues">{silverCount}</h1>
                 </div>
-                <div style={goldCard}>
-                  <h3 style={{ fontSize: "0.8rem", textTransform: "uppercase", color: colors.textSecondary, letterSpacing: "1px" }}>Gold Members</h3>
-                  <h1 style={{ fontFamily: fonts.heading, fontSize: "1.8rem", fontWeight: 700, marginTop: "8px" }}>{goldCount}</h1>
+                <div className="makeCard goldCard">
+                  <h3 className="cardDesc">Gold Members</h3>
+                  <h1 className="memValues">{goldCount}</h1>
                 </div>
-                <div style={premiumCard}>
-                  <h3 style={{ fontSize: "0.8rem", textTransform: "uppercase", color: colors.textSecondary, letterSpacing: "1px" }}>Premium Members</h3>
-                  <h1 style={{ fontFamily: fonts.heading, fontSize: "1.8rem", fontWeight: 700, marginTop: "8px" }}>{premiumCount}</h1>
+                <div className="makeCard premiumCard">
+                  <h3 className="cardDesc">Premium Members</h3>
+                  <h1 className="memValues">{premiumCount}</h1>
                 </div>
               </div>
 
-              <p style={{ color: colors.textSecondary, marginBottom: "16px" }}>
+              <p className="showing">
                 Showing {currentMembershipRequests.length} of {filteredMembershipRequests.length} requests
               </p>
 
               {currentMembershipRequests.map((r) => (
-                <div key={r._id} style={rowBase}>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "8px", marginBottom: "12px" }}>
-                    <p><strong style={{ color: colors.textSecondary }}>Name:</strong> {r.user?.fullName}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Email:</strong> {r.user?.email}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Plan:</strong> {r.plan}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Amount:</strong> ₦{r.amount}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Status:</strong> {r.status}</p>
+                <div key={r._id} className="rowBase">
+                  <div className="memLi">
+                    <p><strong className="usText">Name:</strong> {r.user?.fullName}</p>
+                    <p><strong className="usText">Email:</strong> {r.user?.email}</p>
+                    <p><strong className="usText">Plan:</strong> 
+                    <span className={`${r.plan === "Bronze" ? "bronze" : r.plan === "Silver" ? "silver" 
+                      : r.plan === "Gold" ? "gold" : r.plan === "Premium" ? "premium" : ""}`}> {r.plan}</span></p>
+                    <p><strong className="usText">Amount:</strong> ₦{r.amount}</p>
+                    <p><strong className="usText">Status:</strong> {r.status}</p>
                   </div>
                   {r.status === "pending" && (
-                    <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                    <div className="usButtons">
                       <button
-                        style={btnSuccess}
+                        className="btnBase btnSuccess"
                         onClick={async () => {
                           await axios.put(
                             `http://localhost:5000/api/membership-requests/approve/${r._id}`,
@@ -2060,7 +1592,7 @@ const pageBtn = (active) => ({
                         Approve
                       </button>
                       <button
-                        style={btnDanger}
+                        className="btnBase btnDanger"
                         onClick={async () => {
                           await axios.put(
                             `http://localhost:5000/api/membership-requests/reject/${r._id}`,
@@ -2078,20 +1610,20 @@ const pageBtn = (active) => ({
               ))}
 
               {filteredMembershipRequests.length === 0 && (
-                <div style={{ textAlign: "center", padding: "40px", color: colors.textSecondary }}>No membership requests found</div>
+                <div className="noFound">No membership requests found</div>
               )}
 
-              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", marginTop: "24px", flexWrap: "wrap" }}>
-                <button style={btnGhost} disabled={membershipPage === 1} onClick={() => setMembershipPage(membershipPage - 1)}>
+              <div className="paginButtons">
+                <button className="btnBase btnGhost" disabled={membershipPage === 1} onClick={() => setMembershipPage(membershipPage - 1)}>
                   Previous
                 </button>
                 {membershipPageNumbers.map((page) => (
-                  <button key={page} onClick={() => setMembershipPage(page)} style={pageBtn(membershipPage === page)}>
+                  <button key={page} onClick={() => setMembershipPage(page)} className={`pageBtn ${membershipPage === page ? "active" : ""}`}>
                     {page}
                   </button>
                 ))}
                 <button
-                  style={btnGhost}
+                  className="btnBase btnGhost"
                   disabled={membershipPage === totalMembershipPages}
                   onClick={() => setMembershipPage(membershipPage + 1)}
                 >
@@ -2104,27 +1636,19 @@ const pageBtn = (active) => ({
           {/* ═══════ ACTIVATION CODES ═══════ */}
           {tab === "codes" && (
             <div>
-              <h1 style={{ fontFamily: fonts.heading, fontSize: "1.8rem", fontWeight: 700, marginBottom: "20px" }}>Activation Codes</h1>
+              <h1 className="tab">Activation Codes</h1>
 
-              <div
-                style={{
-                  background: colors.surface,
-                  padding: "22px",
-                  borderRadius: radius.lg,
-                  marginBottom: "24px",
-                  boxShadow: shadowSm,
-                }}
-              >
-                <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "center", marginBottom: "16px" }}>
+              <div className="crSe">
+                <div className="cr">
                   <input
                     type="text"
                     placeholder="Enter code"
                     value={newCode}
                     onChange={(e) => setNewCode(e.target.value)}
-                    style={inputStyle}
+                    className="inputStyle seAc"
                   />
                   <button
-                    style={btnPrimary}
+                    className="btnBase btnPrimary"
                     onClick={async () => {
                       await axios.post(
                         "http://localhost:5000/api/admin/codes",
@@ -2143,22 +1667,14 @@ const pageBtn = (active) => ({
                   placeholder="Search code..."
                   value={codeSearch}
                   onChange={(e) => setCodeSearch(e.target.value)}
-                  style={{ ...inputStyle, minWidth: "260px" }}
+                  className="inputStyle seAc"
                 />
               </div>
 
-              <div
-                style={{
-                  background: colors.surface,
-                  padding: "22px",
-                  borderRadius: radius.lg,
-                  marginBottom: "24px",
-                  boxShadow: shadowSm,
-                }}
-              >
-                <h2 style={{ fontFamily: fonts.heading, fontSize: "1.15rem", marginBottom: "12px" }}>Generate Activation Codes</h2>
+              <div className="genCo">
+                <h2 className="f115">Generate Activation Codes</h2>
                 <button
-                  style={btnPrimary}
+                  className="btnBase btnPrimary"
                   onClick={async () => {
                     const res = await axios.post(
                       "http://localhost:5000/api/admin/generate-codes",
@@ -2173,15 +1689,15 @@ const pageBtn = (active) => ({
               </div>
 
               {filteredCodes.map((c) => (
-                <div key={c._id} style={rowBase}>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "8px" }}>
-                    <p><strong style={{ color: colors.textSecondary }}>Code:</strong> {c.code}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Used:</strong> {c.used ? "Yes" : "No"}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Payment Confirmed:</strong> {c.paymentConfirmed ? "Yes" : "No"}</p>
+                <div key={c._id} className="rowBase">
+                  <div className="acLi">
+                    <p><strong className="usText">Code:</strong> {c.code}</p>
+                    <p><strong className="usText">Used:</strong> {c.used ? "Yes" : "No"}</p>
+                    <p><strong className="usText">Payment Confirmed:</strong> {c.paymentConfirmed ? "Yes" : "No"}</p>
                   </div>
                   {!c.paymentConfirmed && (
                     <button
-                      style={{ ...btnSuccess, marginTop: "12px" }}
+                      className="btnBase btnSuccess conPay"
                       onClick={async () => {
                         await axios.put(
                           `http://localhost:5000/api/admin/codes/confirm/${c._id}`,
@@ -2202,17 +1718,17 @@ const pageBtn = (active) => ({
           {/* ═══════ TRANSACTIONS ═══════ */}
           {tab === "transactions" && (
             <div>
-              <h1 style={{ fontFamily: fonts.heading, fontSize: "1.8rem", fontWeight: 700, marginBottom: "20px" }}>All Transactions</h1>
+              <h1 className="tab">All Transactions</h1>
 
-              <div style={{ display: "flex", gap: "12px", marginBottom: "20px", flexWrap: "wrap", alignItems: "center" }}>
+              <div className="seFiSo">
                 <input
                   type="text"
                   placeholder="Search user..."
                   value={transactionSearch}
                   onChange={(e) => setTransactionSearch(e.target.value)}
-                  style={{ ...inputStyle, minWidth: "240px" }}
+                  className="inputStyle se"
                 />
-                <select style={selectStyle} value={transactionFilter} onChange={(e) => setTransactionFilter(e.target.value)}>
+                <select className="inputStyle selectStyle" value={transactionFilter} onChange={(e) => setTransactionFilter(e.target.value)}>
                   <option value="all">All Transactions</option>
                   <option value="ads">Ad Rewards</option>
                   <option value="referral">Referrals</option>
@@ -2220,7 +1736,7 @@ const pageBtn = (active) => ({
                   <option value="survey">Surveys</option>
                   <option value="admin">Admin</option>
                 </select>
-                <select style={selectStyle} value={transactionSort} onChange={(e) => setTransactionSort(e.target.value)}>
+                <select className="inputStyle selectStyle" value={transactionSort} onChange={(e) => setTransactionSort(e.target.value)}>
                   <option value="newest">Newest</option>
                   <option value="oldest">Oldest</option>
                   <option value="highest">Highest Amount</option>
@@ -2228,86 +1744,72 @@ const pageBtn = (active) => ({
                 </select>
               </div>
 
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                  gap: "16px",
-                  marginBottom: "24px",
-                }}
-              >
-                <div style={cardStyle}>
-                  <h3 style={{ fontSize: "0.8rem", textTransform: "uppercase", color: colors.textSecondary, letterSpacing: "1px" }}>Ad Rewards</h3>
-                  <h2 style={{ fontFamily: fonts.heading, fontSize: "1.6rem", fontWeight: 700, marginTop: "8px" }}>₦{totalAds}</h2>
+              <div className="othCard">
+                <div className="makeCard cardStyle">
+                  <h3 className="cardDesc">Ad Rewards</h3>
+                  <h2 className="incardValues">₦{totalAds}</h2>
                 </div>
-                <div style={greenCard}>
-                  <h3 style={{ fontSize: "0.8rem", textTransform: "uppercase", color: colors.textSecondary, letterSpacing: "1px" }}>Referral Bonuses</h3>
-                  <h2 style={{ fontFamily: fonts.heading, fontSize: "1.6rem", fontWeight: 700, marginTop: "8px" }}>₦{totalReferrals}</h2>
+                <div className="makeCard greenCard">
+                  <h3 className="cardDesc">Referral Bonuses</h3>
+                  <h2 className="incardValues">₦{totalReferrals}</h2>
                 </div>
-                <div style={orangeCard}>
-                  <h3 style={{ fontSize: "0.8rem", textTransform: "uppercase", color: colors.textSecondary, letterSpacing: "1px" }}>Survey Rewards</h3>
-                  <h2 style={{ fontFamily: fonts.heading, fontSize: "1.6rem", fontWeight: 700, marginTop: "8px" }}>₦{totalSurveys}</h2>
+                <div className="makeCard orangeCard">
+                  <h3 className="cardDesc">Survey Rewards</h3>
+                  <h2 className="incardValues">₦{totalSurveys}</h2>
                 </div>
-                <div style={redCard}>
-                  <h3 style={{ fontSize: "0.8rem", textTransform: "uppercase", color: colors.textSecondary, letterSpacing: "1px" }}>Withdrawals</h3>
-                  <h2 style={{ fontFamily: fonts.heading, fontSize: "1.6rem", fontWeight: 700, marginTop: "8px" }}>₦{totalWithdrawalAmount}</h2>
+                <div className="makeCard redCard">
+                  <h3 className="cardDesc">Withdrawals</h3>
+                  <h2 className="incardValues">₦{totalWithdrawalAmount}</h2>
                 </div>
-                <div style={purpleCard}>
-                  <h3 style={{ fontSize: "0.8rem", textTransform: "uppercase", color: colors.textSecondary, letterSpacing: "1px" }}>Total Transactions</h3>
-                  <h2 style={{ fontFamily: fonts.heading, fontSize: "1.6rem", fontWeight: 700, marginTop: "8px" }}>{transactions.length}</h2>
+                <div className="makeCard purpleCard">
+                  <h3 className="cardDesc">Total Transactions</h3>
+                  <h2 className="incardValues">{transactions.length}</h2>
                 </div>
               </div>
 
-              <p style={{ color: colors.textSecondary, marginBottom: "16px" }}>
+              <p className="showing">
                 Showing {currentTransactions.length} of {filteredTransactions.length} transactions
               </p>
 
               {currentTransactions.map((t) => (
-                <div key={t._id} style={rowBase}>
-                  <p style={{ marginBottom: "6px" }}>
-                    <strong style={{ color: colors.textSecondary }}>Type:</strong>{" "}
-                    <span
-                      style={{
-                        color:
-                          t.type === "withdrawal"
-                            ? colors.danger
-                            : t.type === "referral"
-                            ? colors.success
-                            : t.type === "ads"
-                            ? colors.info
-                            : colors.warning,
-                        fontWeight: 700,
-                        marginLeft: "6px",
-                      }}
+                <div key={t._id} className="rowBase">
+                  <p className="p">
+                    <strong className="usText">Type:</strong>{" "}
+                    <span   className={`tranCol 
+                    ${t.type === "withdrawal" ? "with" 
+                    : t.type === "referral" ? "refer"
+                    : t.type === "ads" ? "ad"
+                    : t.type === "survey" ? "surv"
+                    : ""}`}
                     >
                       {t.type.toUpperCase()}
                     </span>
                   </p>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "6px" }}>
-                    <p><strong style={{ color: colors.textSecondary }}>User:</strong> {t.user?.fullName}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Email:</strong> {t.user?.email}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Amount:</strong> ₦{t.amount}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Status:</strong> {t.status}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Date:</strong> {new Date(t.createdAt).toLocaleString()}</p>
+                  <div className="tranLi">
+                    <p><strong className="usText">User:</strong> {t.user?.fullName}</p>
+                    <p><strong className="usText">Email:</strong> {t.user?.email}</p>
+                    <p><strong className="usText">Amount:</strong> ₦{t.amount}</p>
+                    <p><strong className="usText">Status:</strong> {t.status}</p>
+                    <p><strong className="usText">Date:</strong> {new Date(t.createdAt).toLocaleString()}</p>
                   </div>
                 </div>
               ))}
 
               {filteredTransactions.length === 0 && (
-                <div style={{ textAlign: "center", padding: "40px", color: colors.textSecondary }}>No transactions found</div>
+                <div className="noFound">No transactions found</div>
               )}
 
-              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", marginTop: "24px", flexWrap: "wrap" }}>
-                <button style={btnGhost} disabled={transactionPage === 1} onClick={() => setTransactionPage(transactionPage - 1)}>
+              <div className="paginButtons">
+                <button className="btnBase btnGhost" disabled={transactionPage === 1} onClick={() => setTransactionPage(transactionPage - 1)}>
                   Previous
                 </button>
                 {transactionPageNumbers.map((page) => (
-                  <button key={page} onClick={() => setTransactionPage(page)} style={pageBtn(transactionPage === page)}>
+                  <button key={page} onClick={() => setTransactionPage(page)} className={`pageBtn ${transactionPage === page ? "active" : ""}`}>
                     {page}
                   </button>
                 ))}
                 <button
-                  style={btnGhost}
+                  className="btnBase btnGhost"
                   disabled={transactionPage === totalTransactionPages}
                   onClick={() => setTransactionPage(transactionPage + 1)}
                 >
@@ -2320,38 +1822,38 @@ const pageBtn = (active) => ({
           {/* ═══════ SUPPORT TICKETS ═══════ */}
           {tab === "support" && (
             <div>
-              <h1 style={{ fontFamily: fonts.heading, fontSize: "1.8rem", fontWeight: 700, marginBottom: "20px" }}>Support Tickets</h1>
+              <h1 className="tab">Support Tickets</h1>
 
-              <div style={{ display: "flex", gap: "12px", marginBottom: "20px", flexWrap: "wrap", alignItems: "center" }}>
+              <div className="seFiSo">
                 <input
                   placeholder="Search tickets..."
                   value={ticketSearch}
                   onChange={(e) => setTicketSearch(e.target.value)}
-                  style={{ ...inputStyle, minWidth: "240px" }}
+                  className="inputStyle se"
                 />
-                <select style={selectStyle} value={ticketStatusFilter} onChange={(e) => setTicketStatusFilter(e.target.value)}>
+                <select className="inputStyle selectStyle" value={ticketStatusFilter} onChange={(e) => setTicketStatusFilter(e.target.value)}>
                   <option value="all">All Tickets</option>
                   <option value="open">Open</option>
                   <option value="resolved">Resolved</option>
                 </select>
               </div>
 
-              <p style={{ color: colors.textSecondary, marginBottom: "16px" }}>
+              <p className="showing">
                 Showing {currentTickets.length} of {filteredTickets.length} tickets
               </p>
 
               {currentTickets.map((t) => (
-                <div key={t._id} style={rowBase}>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "6px" }}>
-                    <p><strong style={{ color: colors.textSecondary }}>Name:</strong> {t.fullName}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Email:</strong> {t.email}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Tier:</strong> {t.membershipTier}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Message:</strong> {t.message}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Status:</strong> {t.status}</p>
+                <div key={t._id} className="rowBase">
+                  <div className="tranLi">
+                    <p><strong className="usText">Name:</strong> {t.fullName}</p>
+                    <p><strong className="usText">Email:</strong> {t.email}</p>
+                    <p><strong className="usText">Tier:</strong> {t.membershipTier}</p>
+                    <p><strong className="usText">Message:</strong> {t.message}</p>
+                    <p><strong className="usText">Status:</strong> {t.status}</p>
                   </div>
                   {t.status === "open" && (
                     <button
-                      style={{ ...btnSuccess, marginTop: "12px" }}
+                      className="btnBase btnSuccess conPay"
                       onClick={async () => {
                         await axios.put(
                           `http://localhost:5000/api/support/resolve/${t._id}`,
@@ -2368,19 +1870,19 @@ const pageBtn = (active) => ({
               ))}
 
               {filteredTickets.length === 0 && (
-                <div style={{ textAlign: "center", padding: "40px", color: colors.textSecondary }}>No support tickets found</div>
+                <div className="noFound">No support tickets found</div>
               )}
 
-              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", marginTop: "24px", flexWrap: "wrap" }}>
-                <button style={btnGhost} disabled={ticketPage === 1} onClick={() => setTicketPage(ticketPage - 1)}>
+              <div className="paginButtons">
+                <button className="btnBase btnGhost" disabled={ticketPage === 1} onClick={() => setTicketPage(ticketPage - 1)}>
                   Previous
                 </button>
                 {ticketPageNumbers.map((page) => (
-                  <button key={page} onClick={() => setTicketPage(page)} style={pageBtn(ticketPage === page)}>
+                  <button key={page} onClick={() => setTicketPage(page)} className={`pageBtn ${ticketPage === page ? "active" : ""}`}>
                     {page}
                   </button>
                 ))}
-                <button style={btnGhost} disabled={ticketPage === totalTicketPages} onClick={() => setTicketPage(ticketPage + 1)}>
+                <button className="btnBase btnGhost" disabled={ticketPage === totalTicketPages} onClick={() => setTicketPage(ticketPage + 1)}>
                   Next
                 </button>
               </div>
@@ -2390,21 +1892,13 @@ const pageBtn = (active) => ({
           {/* ═══════ NOTIFICATIONS ═══════ */}
           {tab === "notifications" && (
             <div>
-              <h1 style={{ fontFamily: fonts.heading, fontSize: "1.8rem", fontWeight: 700, marginBottom: "20px" }}>Notification Center</h1>
+              <h1 className="tab">Notification Center</h1>
 
-              <div
-                style={{
-                  background: colors.surface,
-                  padding: "22px",
-                  borderRadius: radius.lg,
-                  marginBottom: "28px",
-                  boxShadow: shadowSm,
-                }}
-              >
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px", maxWidth: "600px" }}>
-                  <input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} style={inputStyle} />
-                  <textarea placeholder="Message" value={message} onChange={(e) => setMessage(e.target.value)} style={{ ...inputStyle, minHeight: "100px", resize: "vertical" }} />
-                  <select style={selectStyle} value={targetType} onChange={(e) => setTargetType(e.target.value)}>
+              <div className="sendNo"> 
+                <div className="seFi">
+                  <input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} className="inputStyle" />
+                  <textarea placeholder="Message" value={message} onChange={(e) => setMessage(e.target.value)} className="inputStyle" />
+                  <select className="inputStyle selectStyle" value={targetType} onChange={(e) => setTargetType(e.target.value)}>
                     <option value="all">All Users</option>
                     <option value="Bronze">Bronze</option>
                     <option value="Silver">Silver</option>
@@ -2414,7 +1908,7 @@ const pageBtn = (active) => ({
                   </select>
 
                   {targetType === "single" && (
-                    <select style={selectStyle} value={selectedUser} onChange={(e) => setSelectedUser(e.target.value)}>
+                    <select className="inputStyle selectStyle" value={selectedUser} onChange={(e) => setSelectedUser(e.target.value)}>
                       <option value="">Choose User</option>
                       {users.map((u) => (
                         <option key={u._id} value={u._id}>
@@ -2425,7 +1919,7 @@ const pageBtn = (active) => ({
                   )}
 
                   <button
-                    style={btnPrimary}
+                    className="btnBase btnPrimary"
                     onClick={async () => {
                       await axios.post(
                         "http://localhost:5000/api/admin/notifications",
@@ -2450,47 +1944,56 @@ const pageBtn = (active) => ({
                 </div>
               </div>
 
-              <div style={{ display: "flex", gap: "12px", marginBottom: "20px", flexWrap: "wrap", alignItems: "center" }}>
+              <div className="seFiSo">
                 <input
                   placeholder="Search notification..."
                   value={notificationSearch}
                   onChange={(e) => setNotificationSearch(e.target.value)}
-                  style={{ ...inputStyle, minWidth: "240px" }}
+                  className="inputStyle se"
                 />
-                <select style={selectStyle} value={notificationFilter} onChange={(e) => setNotificationFilter(e.target.value)}>
+                <select className="inputStyle selectStyle" value={notificationFilter} onChange={(e) => setNotificationFilter(e.target.value)}>
                   <option value="all">All Notifications</option>
                   <option value="admin">Admin Sent</option>
                   <option value="system">System Generated</option>
                 </select>
               </div>
 
-              <p style={{ color: colors.textSecondary, marginBottom: "16px" }}>
+              <p className="showing">
                 Showing {currentNotifications.length} of {filteredNotifications.length} notifications
               </p>
 
               {currentNotifications.map((n) => (
-                <div key={n._id} style={rowBase}>
-                  <h3 style={{ fontFamily: fonts.heading, fontSize: "1.1rem", marginBottom: "6px" }}>{n.title}</h3>
-                  <p style={{ marginBottom: "6px" }}>{n.message}</p>
+                <div key={n._id} className="rowBase">
+                  <h3 className="notifTitle">{n.title}</h3>
+                  <p className="p">{n.message}</p>
                   {n.targetUser && (
-                    <p style={{ marginBottom: "4px" }}>
-                      <strong style={{ color: colors.textSecondary }}>User:</strong> {n.targetUser.fullName || "All Users"} ({n.targetUser.email})
+                    <p className="notifInfo">
+                      <strong className="usText">User:</strong> {n.targetUser.fullName || "All Users"} ({n.targetUser.email})
                     </p>
                   )}
-                  <p style={{ marginBottom: "4px" }}>
-                    <strong style={{ color: colors.textSecondary }}>Tier:</strong> {n.targetTier || "All Tiers"}
+                  <p className="notifInfo">
+                    <strong className="usText">Tier:</strong> {n.targetTier || "All Tiers"}
                   </p>
-                  <p style={{ marginBottom: "4px" }}>
-                    <strong style={{ color: colors.textSecondary }}>Source:</strong>{" "}
+                  <p className="notifInfo">
+                    <strong className="usText">Source:</strong>{" "}
                     {n.senderType === "admin" ? "Admin Broadcast" : "System Generated"}
                   </p>
-                  <small style={{ color: colors.textSecondary }}>{new Date(n.createdAt).toLocaleString()}</small>
+                  <small className="usText">{new Date(n.createdAt).toLocaleString()}</small>
                   <button
-                    style={{ ...btnDanger, marginTop: "12px", marginLeft: "10px" }}
+                    className="btnBase btnDanger notifDel"
                     onClick={async () => {
+
+                        const confirmDelete =
+                        window.confirm(
+                          "Delete notification?"
+                        );
+
+                      if (!confirmDelete) return;
+
                       await axios.delete(`http://localhost:5000/api/admin/notifications/${n._id}`, {
                         headers: { Authorization: `Bearer ${token}` },
                       });
+                      alert("Notification deleted")
                       fetchNotifications();
                     }}
                   >
@@ -2500,24 +2003,24 @@ const pageBtn = (active) => ({
               ))}
 
               {filteredNotifications.length === 0 && (
-                <div style={{ textAlign: "center", padding: "40px", color: colors.textSecondary }}>No notifications found</div>
+                <div className="noFound">No notifications found</div>
               )}
 
-              <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginTop: "24px", flexWrap: "wrap" }}>
+              <div className="paginButtons">
                 <button
-                  style={btnGhost}
+                  className="btnBase btnGhost"
                   disabled={notificationPage === 1}
                   onClick={() => setNotificationPage(notificationPage - 1)}
                 >
                   Previous
                 </button>
                 {notificationPageNumbers.map((page) => (
-                  <button key={page} onClick={() => setNotificationPage(page)} style={pageBtn(notificationPage === page)}>
+                  <button key={page} onClick={() => setNotificationPage(page)} className={`pageBtn ${notificationPage === page ? "active" : ""}`}>
                     {page}
                   </button>
                 ))}
                 <button
-                  style={btnGhost}
+                  className="btnBase btnGhost"
                   disabled={notificationPage === totalNotificationPages}
                   onClick={() => setNotificationPage(notificationPage + 1)}
                 >
@@ -2530,46 +2033,46 @@ const pageBtn = (active) => ({
           {/* ═══════ USER DETAILS ═══════ */}
           {tab === "userDetails" && selectedUserData && (
             <div>
-              <button style={btnGhost} onClick={() => setTab("users")}>
+              <button className="btnBase btnGhost" onClick={() => setTab("users")}>
                 ← Back
               </button>
-              <h1 style={{ fontFamily: fonts.heading, fontSize: "1.8rem", fontWeight: 700, margin: "16px 0 20px" }}>User Details</h1>
+              <h1 className="usDet">User Details</h1>
 
-              <div style={cardStyle}>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "10px" }}>
-                  <p><strong style={{ color: colors.textSecondary }}>Full Name:</strong> {selectedUserData.fullName}</p>
-                  <p><strong style={{ color: colors.textSecondary }}>Username:</strong> {selectedUserData.username}</p>
-                  <p><strong style={{ color: colors.textSecondary }}>Email:</strong> {selectedUserData.email}</p>
-                  <p><strong style={{ color: colors.textSecondary }}>Phone:</strong> {selectedUserData.phone}</p>
-                  <p><strong style={{ color: colors.textSecondary }}>Tier:</strong> {selectedUserData.membershipTier}</p>
-                  <p><strong style={{ color: colors.textSecondary }}>Wallet Balance:</strong> ₦{selectedUserData.walletBalance}</p>
-                  <p><strong style={{ color: colors.textSecondary }}>Total Earned:</strong> ₦{selectedUserData.totalEarned}</p>
-                  <p><strong style={{ color: colors.textSecondary }}>Referrals:</strong> {selectedUserData.referralsCount}</p>
-                  <p><strong style={{ color: colors.textSecondary }}>Referral Earnings:</strong> ₦{selectedUserData.referralEarnings}</p>
-                  <p><strong style={{ color: colors.textSecondary }}>Referral Code:</strong> {selectedUserData.referralCode}</p>
-                  <p><strong style={{ color: colors.textSecondary }}>Referred By:</strong> {selectedUserData.referredBy || "None"}</p>
-                  <p><strong style={{ color: colors.textSecondary }}>Membership Active:</strong> {selectedUserData.membershipActive ? "Yes" : "No"}</p>
-                  <p><strong style={{ color: colors.textSecondary }}>Account Status:</strong> {selectedUserData.isBanned ? "Banned" : "Active"}</p>
+              <div className="makeCard cardStyle">
+                <div className="usStru">
+                  <p><strong className="usText">Full Name:</strong> {selectedUserData.fullName}</p>
+                  <p><strong className="usText">Username:</strong> {selectedUserData.username}</p>
+                  <p><strong className="usText">Email:</strong> {selectedUserData.email}</p>
+                  <p><strong className="usText">Phone:</strong> {selectedUserData.phone}</p>
+                  <p><strong className="usText">Tier:</strong> {selectedUserData.membershipTier}</p>
+                  <p><strong className="usText">Wallet Balance:</strong> ₦{selectedUserData.walletBalance}</p>
+                  <p><strong className="usText">Total Earned:</strong> ₦{selectedUserData.totalEarned}</p>
+                  <p><strong className="usText">Referrals:</strong> {selectedUserData.referralsCount}</p>
+                  <p><strong className="usText">Referral Earnings:</strong> ₦{selectedUserData.referralEarnings}</p>
+                  <p><strong className="usText">Referral Code:</strong> {selectedUserData.referralCode}</p>
+                  <p><strong className="usText">Referred By:</strong> {selectedUserData.referredBy?.username || "None"}</p>
+                  <p><strong className="usText">Membership Active:</strong> {selectedUserData.membershipActive ? "Yes" : "No"}</p>
+                  <p><strong className="usText">Account Status:</strong> {selectedUserData.isBanned ? "Banned" : "Active"}</p>
                 </div>
 
-                <div style={{ marginTop: "20px", paddingTop: "20px", borderTop: `1px solid ${colors.border}` }}>
-                  <h2 style={{ fontFamily: fonts.heading, fontSize: "1.15rem", marginBottom: "12px" }}>Bank Information</h2>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "8px" }}>
-                    <p><strong style={{ color: colors.textSecondary }}>Bank Name:</strong> {selectedUserData?.bank?.name || "N/A"}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Account Name:</strong> {selectedUserData?.bank?.accountName || "N/A"}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Account Number:</strong> {selectedUserData?.bank?.accountNumber || "N/A"}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Currency:</strong> {selectedUserData?.bank?.currency || "NGN"}</p>
+                <div className="usBank">
+                  <h2 className="f115">Bank Information</h2>
+                  <div className="usBankdiv">
+                    <p><strong className="usText">Bank Name:</strong> {selectedUserData?.bank?.name || "N/A"}</p>
+                    <p><strong className="usText">Account Name:</strong> {selectedUserData?.bank?.accountName || "N/A"}</p>
+                    <p><strong className="usText">Account Number:</strong> {selectedUserData?.bank?.accountNumber || "N/A"}</p>
+                    <p><strong className="usText">Currency:</strong> {selectedUserData?.bank?.currency || "NGN"}</p>
                   </div>
                 </div>
 
-                <p style={{ marginTop: "12px" }}>
-                  <strong style={{ color: colors.textSecondary }}>Joined:</strong> {new Date(selectedUserData?.createdAt).toLocaleString()}
+                <p className="conPay">
+                  <strong className="usText">Joined:</strong> {new Date(selectedUserData?.createdAt).toLocaleString()}
                 </p>
 
-                <div style={{ marginTop: "24px", paddingTop: "20px", borderTop: `1px solid ${colors.border}` }}>
-                  <h2 style={{ fontFamily: fonts.heading, fontSize: "1.15rem", marginBottom: "12px" }}>Wallet Adjustment</h2>
-                  <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "center" }}>
-                    <select style={selectStyle} value={walletAction} onChange={(e) => setWalletAction(e.target.value)}>
+                <div className="walAdj">
+                  <h2 className="f115">Wallet Adjustment</h2>
+                  <div className="walAdjdiv">
+                    <select className="inputStyle selectStyle" value={walletAction} onChange={(e) => setWalletAction(e.target.value)}>
                       <option value="add">Add Funds</option>
                       <option value="remove">Remove Funds</option>
                     </select>
@@ -2578,10 +2081,10 @@ const pageBtn = (active) => ({
                       placeholder="Amount"
                       value={walletAmount}
                       onChange={(e) => setWalletAmount(e.target.value)}
-                      style={inputStyle}
+                      className="inputStyle se"
                     />
                     <button
-                      style={btnPrimary}
+                      className="btnBase btnPrimary"
                       onClick={async () => {
                         await axios.put(
                           `http://localhost:5000/api/admin/users/wallet/${selectedUserData._id}`,
@@ -2603,17 +2106,17 @@ const pageBtn = (active) => ({
           {/* ═══════ ACTIVITY LOGS ═══════ */}
           {tab === "logs" && (
             <div>
-              <h1 style={{ fontFamily: fonts.heading, fontSize: "1.8rem", fontWeight: 700, marginBottom: "20px" }}>Activity Logs</h1>
+              <h1 className="tab">Activity Logs</h1>
 
-              <div style={{ display: "flex", gap: "12px", marginBottom: "20px", flexWrap: "wrap", alignItems: "center" }}>
+              <div className="seFiSo">
                 <input
                   type="text"
                   placeholder="Search activity logs..."
                   value={logSearch}
                   onChange={(e) => setLogSearch(e.target.value)}
-                  style={{ ...inputStyle, minWidth: "240px" }}
+                  className="inputStyle se"
                 />
-                <select style={selectStyle} value={logFilter} onChange={(e) => setLogFilter(e.target.value)}>
+                <select className="inputStyle selectStyle" value={logFilter} onChange={(e) => setLogFilter(e.target.value)}>
                   <option value="all">All Activities</option>
                   <option value="User Banned">User Banned</option>
                   <option value="User Unbanned">User Unbanned</option>
@@ -2623,160 +2126,109 @@ const pageBtn = (active) => ({
                 </select>
               </div>
 
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                  gap: "16px",
-                  marginBottom: "24px",
-                }}
-              >
-                <div style={cardStyle}>
-                  <h3 style={{ fontSize: "0.8rem", textTransform: "uppercase", color: colors.textSecondary, letterSpacing: "1px" }}>Total Logs</h3>
-                  <h2 style={{ fontFamily: fonts.heading, fontSize: "1.6rem", fontWeight: 700, marginTop: "8px" }}>{logs.length}</h2>
+              <div className="othCard">
+                <div className="makeCard cardStyle">
+                  <h3 className="cardDesc">Total Logs</h3>
+                  <h2 className="incardValues">{logs.length}</h2>
                 </div>
-                <div style={redCard}>
-                  <h3 style={{ fontSize: "0.8rem", textTransform: "uppercase", color: colors.textSecondary, letterSpacing: "1px" }}>User Bans</h3>
-                  <h2 style={{ fontFamily: fonts.heading, fontSize: "1.6rem", fontWeight: 700, marginTop: "8px" }}>
+                <div className="makeCard redCard">
+                  <h3 className="cardDesc">User Bans</h3>
+                  <h2 className="incardValues">
                     {logs.filter((l) => l.action === "User Banned").length}
                   </h2>
                 </div>
-                <div style={greenCard}>
-                  <h3 style={{ fontSize: "0.8rem", textTransform: "uppercase", color: colors.textSecondary, letterSpacing: "1px" }}>Notifications Sent</h3>
-                  <h2 style={{ fontFamily: fonts.heading, fontSize: "1.6rem", fontWeight: 700, marginTop: "8px" }}>
+                <div className="makeCard greenCard">
+                  <h3 className="cardDesc">Notifications Sent</h3>
+                  <h2 className="incardValues">
                     {logs.filter((l) => l.action === "Notification Sent").length}
                   </h2>
                 </div>
               </div>
 
-              <p style={{ color: colors.textSecondary, marginBottom: "16px" }}>
+              <p className="showing">
                 Showing {currentLogs.length} of {filteredLogs.length} logs
               </p>
 
+              <button className={`btnBase btnDanger ${filteredLogs.length === 0 ? "logDelete" : ""}`} style={{marginBottom: "10px"}} disabled={filteredLogs.length === 0}
+onClick={async () => {
+
+  const confirmDelete =
+    window.confirm(
+      "Delete all activity logs?"
+    );
+
+  if (!confirmDelete) return;
+
+  try {
+
+    await axios.delete(
+      "http://localhost:5000/api/admin/logs",
+      {
+        headers: {
+          Authorization:
+            `Bearer ${token}`
+        }
+      }
+    );
+
+    alert(
+      "All logs deleted"
+    );
+
+    fetchLogs();
+
+  } catch (error) {
+
+    alert(
+      error.response?.data?.message ||
+      "Failed to delete logs"
+    );
+
+  }
+
+}}
+>
+Delete All Logs
+</button>
+
               {currentLogs.map((log) => (
-                <div key={log._id} style={rowBase}>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "6px" }}>
-                    <p><strong style={{ color: colors.textSecondary }}>Action:</strong> {log.action}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>User:</strong> {log.targetUser?.fullName || "N/A"}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Details:</strong> {log.details}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Date:</strong> {new Date(log.createdAt).toLocaleString()}</p>
+                           
+                <div key={log._id} className="rowBase">
+                  <div className="logInfo">
+                    <p><strong className="usText">Action:</strong> {log.action}</p>
+                    <p><strong className="usText">User:</strong> {log.targetUser?.fullName || "N/A"}</p>
+                    <p><strong className="usText">Details:</strong> {log.details}</p>
+                    <p><strong className="usText">Date:</strong> {new Date(log.createdAt).toLocaleString()}</p>
                   </div>
-                </div>
+                </div> 
               ))}
 
               {filteredLogs.length === 0 && (
-                <div style={{ textAlign: "center", padding: "40px", color: colors.textSecondary }}>No logs found</div>
+                <div className="noFound">No logs found</div>
               )}
 
-              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", marginTop: "24px", flexWrap: "wrap" }}>
-                <button style={btnGhost} disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
+              <div className="paginButtons">
+                <button className="btnBase btnGhost" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
                   Previous
                 </button>
                 {pageNumbers.map((page) => (
-                  <button key={page} onClick={() => setCurrentPage(page)} style={pageBtn(currentPage === page)}>
+                  <button key={page} onClick={() => setCurrentPage(page)} className={`pageBtn ${currentPage === page ? "active" : ""}`}>
                     {page}
                   </button>
                 ))}
-                <button style={btnGhost} disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}>
+                <button className="btnBase btnGhost" disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}>
                   Next
                 </button>
               </div>
             </div>
           )}
 
-          {/* ═══════ REPORTS ═══════ */}
-          {tab === "reports" && (
-            <div>
-              <h1 style={{ fontFamily: fonts.heading, fontSize: "1.8rem", fontWeight: 700, marginBottom: "24px" }}>Reports Center</h1>
-
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-                  gap: "16px",
-                }}
-              >
-                {[
-                  { label: "Download Users Report", endpoint: "users", filename: "users-report.pdf" },
-                  { label: "Download Transactions Report", endpoint: "transactions", filename: "transactions-report.pdf" },
-                  { label: "Download Withdrawals Report", endpoint: "withdrawals", filename: "withdrawals-report.pdf" },
-                  { label: "Download Membership Report", endpoint: "membership", filename: "membership-report.pdf" },
-                  { label: "Download Financial Report", endpoint: "financial", filename: "financial-report.pdf" },
-                ].map((r) => (
-                  <button
-                    key={r.endpoint}
-                    style={{
-                      ...btnPrimary,
-                      padding: "18px 24px",
-                      fontSize: "1rem",
-                      justifyContent: "center",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "10px",
-                    }}
-                    onClick={async () => {
-                      const res = await axios.get(`http://localhost:5000/api/admin/reports/${r.endpoint}`, {
-                        headers: { Authorization: `Bearer ${token}` },
-                        responseType: "blob",
-                      });
-                      const url = window.URL.createObjectURL(new Blob([res.data]));
-                      const link = document.createElement("a");
-                      link.href = url;
-                      link.setAttribute("download", r.filename);
-                      document.body.appendChild(link);
-                      link.click();
-                    }}
-                  >
-                    {r.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* ═══════ WALLET HISTORY ═══════ */}
-          {tab === "walletHistory" && (
-            <div>
-              <h1 style={{ fontFamily: fonts.heading, fontSize: "1.8rem", fontWeight: 700, marginBottom: "20px" }}>Wallet Adjustment History</h1>
-
-              <div style={{ display: "flex", gap: "12px", marginBottom: "20px", flexWrap: "wrap", alignItems: "center" }}>
-                <input
-                  placeholder="Search history..."
-                  value={walletHistorySearch}
-                  onChange={(e) => setWalletHistorySearch(e.target.value)}
-                  style={{ ...inputStyle, minWidth: "240px" }}
-                />
-                <select style={selectStyle} value={walletActionFilter} onChange={(e) => setWalletActionFilter(e.target.value)}>
-                  <option value="all">All</option>
-                  <option value="add">Credits</option>
-                  <option value="remove">Debits</option>
-                </select>
-              </div>
-
-              {filteredWalletHistory.map((h) => (
-                <div key={h._id} style={rowBase}>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "6px" }}>
-                    <p><strong style={{ color: colors.textSecondary }}>User:</strong> {h.user?.fullName}</p>
-                    <p style={{ color: h.action === "add" ? colors.success : colors.danger, fontWeight: 700 }}>
-                      <strong style={{ color: colors.textSecondary }}>Action:</strong> {h.action === "add" ? "Credit" : "Debit"}
-                    </p>
-                    <p><strong style={{ color: colors.textSecondary }}>Amount:</strong> ₦{h.amount}</p>
-                    <p><strong style={{ color: colors.textSecondary }}>Date:</strong> {new Date(h.createdAt).toLocaleString()}</p>
-                  </div>
-                </div>
-              ))}
-
-              {filteredWalletHistory.length === 0 && (
-                <div style={{ textAlign: "center", padding: "40px", color: colors.textSecondary }}>No history found</div>
-              )}
-            </div>
-          )}
-
+          {/* SECURITY */}
           {tab === "security" && (
 
 <div>
 
-<h1 style={{ fontFamily: fonts.heading, fontSize: "1.8rem", fontWeight: 700, marginBottom: "20px" }}>Change Password</h1>
+<h1 className="tab">Change Password</h1>
 
 <input
 type="password"
@@ -2785,8 +2237,7 @@ value={currentPassword}
 onChange={(e)=>
 setCurrentPassword(e.target.value)
 }
-style={{ ...inputStyle, minWidth: "240px", marginRight: "15px" }}
-/>
+className="inputStyle pass"/>
 
 <input
 type="password"
@@ -2795,8 +2246,7 @@ value={newPassword}
 onChange={(e)=>
 setNewPassword(e.target.value)
 }
-style={{ ...inputStyle, minWidth: "240px", marginRight: "15px" }}
-/>
+className="inputStyle pass"/>
 
 <input
 type="password"
@@ -2805,11 +2255,10 @@ value={confirmPassword}
 onChange={(e)=>
 setConfirmPassword(e.target.value)
 }
-style={{ ...inputStyle, minWidth: "240px", marginRight: "15px" }}
-/>
+className="inputStyle pass"/>
 
 <button
-style={btnPrimary}
+className="btnBase btnPrimary"
 onClick={async () => {
 
 

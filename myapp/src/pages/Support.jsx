@@ -6,9 +6,6 @@ export default function Support({ setView, onLogout }) {
   // FAQ Accordion State
   const [user, setUser] = useState(null);
   const [openFaq, setOpenFaq] = useState(null);
- const currentUser = JSON.parse(
-  localStorage.getItem("currentUser") || "null"
-);
   // Form State
   const [formData, setFormData] = useState({
     message: ""
@@ -742,19 +739,12 @@ n.createdAt
       height: "45px"
     }}
   >
-    <img
-      src={
-        localStorage.getItem(
-  `profileImage_${currentUser?._id}`
-)
-
-          ? `http://localhost:5000/uploads/${localStorage.getItem(
-  `profileImage_${currentUser?._id}`
-)}`
-
-          : "https://i.pravatar.cc/100"
-      }
-      alt="Avatar"
+<img
+  src={
+    user?.profileImage ||
+    "https://i.pravatar.cc/100"
+  }
+  alt="Avatar"
       style={{
         width: "45px",
         height: "45px",
@@ -828,13 +818,7 @@ n.createdAt
             return;
 
           }
-
-          localStorage.setItem(
-  `profileImage_${currentUser?._id}`,
-  data.image
-);
-
-          window.location.reload();
+await fetchUser();
 
         } catch (error) {
 

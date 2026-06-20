@@ -17,13 +17,8 @@ const {
   createCode,
   confirmCodePayment,
   adjustWallet,
-  generateUsersReport,
-  generateFinancialReport,
-  generateTransactionsReport,
-  generateWithdrawalsReport,
-  generateMembershipReport,
-  generateUserPdf,
-  changePassword
+  changePassword,
+  deleteAllLogs
 } = require(
   "../controllers/adminController"
 );
@@ -63,46 +58,16 @@ router.put(
   adjustWallet
 );
 
-router.get(
-  "/reports/users",
-  adminMiddleware,
-  generateUsersReport
-);
-
-router.get(
-  "/reports/financial",
-  adminMiddleware,
-  generateFinancialReport
-);
-
-router.get(
-  "/reports/transactions",
-  adminMiddleware,
-  generateTransactionsReport
-);
-
-router.get(
-  "/reports/withdrawals",
-  adminMiddleware,
-  generateWithdrawalsReport
-);
-
-router.get(
-  "/reports/membership",
-  adminMiddleware,
-  generateMembershipReport
-);
-
-router.get(
-  "/reports/user/:id",
-  adminMiddleware,
-  generateUserPdf
-);
-
 router.put(
   "/change-password",
   adminMiddleware,
   changePassword
+);
+
+router.delete(
+  "/logs",
+  adminMiddleware,
+  deleteAllLogs
 );
 
 router.delete("/users/:id", adminMiddleware, async (req, res) => {
@@ -140,6 +105,42 @@ router.put("/users/toggle-membership/:id", adminMiddleware, async (req, res) => 
 
   res.json(user);
 });
+
+router.put("/users/membership-reset/:id", adminMiddleware, async (req, res) => {
+    const user = await User.findById(req.params.id);
+
+    user.membershipTier = "Starter";
+    user.membershipActivatedAt = null;
+
+    if(user.membershipTier === "Starter"){
+      return;
+    }
+
+    await user.save();
+
+        await AdminLog.create({
+
+  action: "Membership Reset",
+
+  targetUser:
+    user._id,
+
+  details:
+    user.fullName
+
+});
+
+  const io = req.app.get("io");
+
+  io.emit("userUpdated");
+
+  io.emit("adminLogUpdated");
+
+    res.json({
+      success: true
+    });
+}
+);
 
 router.put("/users/ban/:id", adminMiddleware, async (req, res) => {
   const user = await User.findById(req.params.id);

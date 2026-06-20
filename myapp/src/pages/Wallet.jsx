@@ -3,9 +3,6 @@ import {useEffect,useState } from "react";
 import socket from "../socket";
 
 export default function Wallet({ setView, onLogout }) {
-   const currentUser = JSON.parse(
-  localStorage.getItem("currentUser") || "null"
-);
 
   const [walletData, setWalletData] = useState({
   walletBalance: 0,
@@ -785,19 +782,12 @@ n.createdAt
       height: "45px"
     }}
   >
-    <img
-      src={
-        localStorage.getItem(
-  `profileImage_${currentUser?._id}`
-)
-
-          ? `http://localhost:5000/uploads/${localStorage.getItem(
-  `profileImage_${currentUser?._id}`
-)}`
-
-          : "https://i.pravatar.cc/100"
-      }
-      alt="Avatar"
+<img
+  src={
+    walletData?.profileImage ||
+    "https://i.pravatar.cc/100"
+  }
+  alt="Avatar"
       style={{
         width: "45px",
         height: "45px",
@@ -871,13 +861,7 @@ n.createdAt
             return;
 
           }
-
-          localStorage.setItem(
-  `profileImage_${currentUser?._id}`,
-  data.image
-);
-
-          window.location.reload();
+await fetchWallet();
 
         } catch (error) {
 
@@ -1039,7 +1023,7 @@ n.createdAt
 
   
         {/* ANALYTICS CARD MATRIX STREAKS */}
-        <div className="stats" style={styles.statsGrid}>
+        <div style={styles.statsGrid}>
           <div className="stat-card" style={styles.statCard}>
             <i className="fa-solid fa-money-bill-wave" style={styles.statIcon}></i>
             <h3 style={styles.statTitle}>Total Earnings</h3>
@@ -1055,7 +1039,7 @@ n.createdAt
           <div className="stat-card" style={styles.statCard}>
             <i className="fa-solid fa-user-plus" style={styles.statIcon}></i>
             <h3 style={styles.statTitle}>Referral Bonus</h3>
-            <h1 style={styles.statValue}>₦{walletData.referralBonus?.toLocaleString()}</h1>
+            <h1 style={styles.statValue}>₦{walletData.referralEarnings?.toLocaleString()}</h1>
           </div>
 
           <div className="stat-card" style={styles.statCard}>

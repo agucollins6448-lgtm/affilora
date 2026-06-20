@@ -29,9 +29,17 @@ async (req, res) => {
 
     }
 
-    return res.download(
-      withdrawal.receiptPath
-    );
+if (
+  withdrawal.receiptPath.startsWith("http")
+) {
+  return res.redirect(
+    withdrawal.receiptPath
+  );
+}
+
+return res.download(
+  withdrawal.receiptPath
+);
 
   } catch (error) {
 

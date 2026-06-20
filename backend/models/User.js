@@ -38,7 +38,8 @@ const userSchema = new mongoose.Schema({
 
 notificationsStartDate: {
   type: Date,
-  default: Date.now
+  default: Date.now,
+  expires: 60 * 60 * 24 * 30
 },
 
   card: {
@@ -82,11 +83,11 @@ notificationsStartDate: {
   },
 
   // 🔴 IMPORTANT: this stores who referred this user (referralCode)
-  referredBy: {
-    type: String,
-    default: null,
-    index: true   // ✅ makes referral queries faster
-  },
+referredBy: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "User",
+  default: null
+},
 
   membershipTier: {
     type: String,
