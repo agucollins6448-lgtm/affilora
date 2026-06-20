@@ -118,11 +118,9 @@ async (req, res) => {
 
     const io = req.app.get("io");
 
-io.to(user._id.toString())
-  .emit("membershipUpdated");
+io.emit("membershipUpdated");
 
-io.to(user._id.toString())
-  .emit("userUpdated");
+io.emit("userUpdated");
 
     res.json(requests);
 
@@ -254,8 +252,7 @@ const io = req.app.get("io");
 io.to(user._id.toString())
   .emit("notificationUpdated");
 
-io.to(user._id.toString())
-  .emit("membershipUpdated",
+io.emit("membershipUpdated",
     approvedUser._id);
 
 io.to(user._id.toString())
@@ -362,8 +359,7 @@ const io = req.app.get("io");
 io.to(user._id.toString())
   .emit("notificationUpdated");
 
-io.to(user._id.toString())
-  .emit("membershipUpdated");
+io.emit("membershipUpdated");
 
 io.to(user._id.toString())
   .emit("userUpdated");

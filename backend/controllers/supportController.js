@@ -103,11 +103,9 @@ async (req, res) => {
 
     const io = req.app.get("io");
 
-io.to(user._id.toString())
-  .emit("ticketUpdated");
+io.emit("ticketUpdated");
 
-io.to(user._id.toString())
-  .emit("userUpdated");
+io.emit("userUpdated");
     
     res.json(tickets);
 

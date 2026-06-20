@@ -304,8 +304,7 @@ await Transaction.create({
 
 const io = req.app.get("io");
 
-io.to(user._id.toString())
-  .emit("withdrawalUpdated");
+io.emit("withdrawalUpdated");
 
 io.to(user._id.toString())
   .emit("transactionUpdated");
@@ -345,14 +344,11 @@ async (req, res) => {
 
     const io = req.app.get("io");
 
-io.to(user._id.toString())
-  .emit("withdrawalUpdated");
+io.emit("withdrawalUpdated");
 
-io.to(user._id.toString())
-  .emit("transactionUpdated");
+io.emit("transactionUpdated");
 
-io.to(user._id.toString())
-  .emit("userUpdated");
+io.emit("userUpdated");
 
     res.json(withdrawals);
 
