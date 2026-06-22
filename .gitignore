@@ -3,6 +3,7 @@ backend/node_modules
 
 myapp/dist
 myapp/build
+myapp/README.md
 
 backend/uploads
 backend/receipts
