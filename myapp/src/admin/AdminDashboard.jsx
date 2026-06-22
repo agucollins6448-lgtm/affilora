@@ -1932,6 +1932,7 @@ const userPageNumbers =
                         },
                         { headers: { Authorization: `Bearer ${token}` } }
                       );
+                      alert("Notification sent")
                       setTitle("");
                       setMessage("");
                       setTargetType("all");

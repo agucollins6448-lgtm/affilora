@@ -396,6 +396,11 @@ useEffect(() => {
       fontSize: "13px",
       margin: 0
     },
+    amount: {
+      color: "var(--muted)",
+      fontWeight: 600,
+      fontSize: "1.05rem"
+    },
     amountPositive: {
       color: "var(--green-2)",
       fontWeight: 600,
@@ -951,12 +956,16 @@ await fetchUser();
         style={
           item.type === "positive"
             ? styles.amountPositive
+            : item.type === "none"
+            ? styles.amount
             : styles.amountNegative
         }
       >
         {item.type === "positive"
           ? "+"
-          : "-"}
+          : item.type === "none"
+          ? ""
+          : "-" }
         ₦{item.amount}
       </div>
 

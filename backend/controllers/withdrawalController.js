@@ -368,10 +368,9 @@ async (req, res) => {
   try {
 
 const withdrawal =
-  await Withdrawal.findOne({
-    _id: req.params.id,
-    user: req.user.id
-  }).populate("user");
+  await Withdrawal.findById(
+    req.params.id
+  ).populate("user");
 
     if (!withdrawal) {
 
@@ -436,8 +435,6 @@ withdrawal.receiptPublicId =
 
 await withdrawal.save();
 
-fs.unlinkSync(receiptPath);
-
 await Transaction.findOneAndUpdate(
   {
     user: withdrawal.user,
@@ -492,6 +489,10 @@ await sendEmail(
   ]
 );
 
+}
+
+if (fs.existsSync(receiptPath)) {
+  fs.unlinkSync(receiptPath);
 }
 
 await AdminLog.create({

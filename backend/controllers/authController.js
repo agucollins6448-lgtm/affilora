@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const Task = require("../models/Task");
 const Transaction = require("../models/Transaction");
 const Notification = require("../models/Notification");
+const Withdrawal = require("../models/Withdrawal");
 const sendEmail = require("../utils/sendEmail");
 const {uploadToCloudinary} = require("../middleware/upload");
 
@@ -708,12 +709,16 @@ const recentActivity = transactions
       case "withdrawal":
         text = "Withdrawal";
         break;
+
+      case "admin":
+        text = "Wallet-Adjustment";
+        break;
     }
 
     return {
   text,
   amount: Number(t.amount || 0),
-  type: t.type === "withdrawal" ? "negative" : "positive",
+  type: t.type === "withdrawal" ? "negative" : t.type === "admin" ? "none" : "positive", 
   createdAt: toLagosDate(t.createdAt)
 };
   });
@@ -799,6 +804,72 @@ const taskRevenue =
       0
     );
 
+    const day2 = now.getDate();
+
+let startDate;
+let endDate;
+
+if (day2 >= 8 && day2 <= 14) {
+
+  startDate = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    8
+  );
+
+  endDate = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    14,
+    23,
+    59,
+    59
+  );
+
+} else if (day2 >= 22) {
+
+  startDate = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    22
+  );
+
+  endDate = new Date(
+    now.getFullYear(),
+    now.getMonth() + 1,
+    0,
+    23,
+    59,
+    59
+  );
+
+}
+
+let alreadyWithdrawnThisPeriod = false;
+
+if (startDate && endDate) {
+
+  const withdrawal =
+    await Withdrawal.findOne({
+
+      user: user._id,
+
+      status: {
+        $in: ["pending", "success"]
+      },
+
+      createdAt: {
+        $gte: startDate,
+        $lte: endDate
+      }
+
+    });
+
+  alreadyWithdrawnThisPeriod =
+    !!withdrawal;
+
+}
+
 res.json({
   _id: user._id,
   
@@ -857,6 +928,8 @@ res.json({
   weeklyTaskRevenue,
 
   monthlyTaskRevenue,
+
+  alreadyWithdrawnThisPeriod,
 
   transactions: transactions
   .sort(

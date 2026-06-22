@@ -242,6 +242,10 @@ await Notification.find()
   createdAt: -1
 });
 
+const io = req.app.get("io");
+
+io.emit("notificationUpdated");
+
     res.json(
       notifications
     );
@@ -390,6 +394,9 @@ router.delete(
 
   action:
     "Notification Deleted",
+
+  details:
+    title
 
 });
 

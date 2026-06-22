@@ -369,7 +369,7 @@ textarea{
 
 .cardStyle {border-left: 4px solid var(--accent);}
 .greenCard {border-left: 4px solid var(--success);}
-.orangeCard {border-left: 4px solid var(--warning);}
+.orangeCard {border-left: 4px solid var(--gold-2);}
 .redCard {border-left: 4px solid var(--danger);}
 .purpleCard {border-left: 4px solid var(--purple);}
 .starterCard {border-left: 4px solid var(--starter);}

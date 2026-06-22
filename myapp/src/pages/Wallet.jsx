@@ -8,7 +8,7 @@ export default function Wallet({ setView, onLogout }) {
   walletBalance: 0,
   totalEarned: 0,
   totalWithdrawals: 0,
-  referralBonus: 0,
+  referralEarnings: 0,
   taskRevenue: 0,
   transactions: []
 });
@@ -440,6 +440,10 @@ useEffect(() => {
     },
     redText: {
       color: "#ef4444",
+      fontWeight: 600
+    },
+    admText: {
+      color: "var(--muted)",
       fontWeight: 600
     },
     statusBadge: {
@@ -957,10 +961,16 @@ await fetchWallet();
     alert("Requirements not met");
     return;
   } 
-      if(!isFirstWithdrawal){
-        alert("You can only withdraw once during the withdrawal week");
-        return;
-      }
+
+      if (walletData.alreadyWithdrawnThisPeriod) {
+
+    alert(
+      "You can only make one withdrawal during the withdrawal week."
+    );
+
+    return;
+  }
+
 
     const amount = prompt(
       "Enter amount to withdraw"
@@ -1080,13 +1090,17 @@ await fetchWallet();
       <td
         style={{
           ...styles.td,
-          ...(tx.type === "withdrawal"
+          ...(tx.type === "withdrawal" 
             ? styles.redText
+            : tx.type === "admin"
+            ? styles.admText
             : styles.greenText)
         }}
       >
-        {tx.type === "withdrawal"
+        {tx.type === "withdrawal" 
           ? "-"
+          : tx.type === "admin"
+          ? ""
           : "+"}
         ₦{tx.amount}
       </td>
