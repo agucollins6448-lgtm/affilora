@@ -36,12 +36,6 @@ const userSchema = new mongoose.Schema({
   default: true
 },
 
-notificationsStartDate: {
-  type: Date,
-  default: Date.now,
-  expires: 60 * 60 * 24 * 30
-},
-
   card: {
     holder: { type: String, default: "" },
     number: { type: String, default: "" },

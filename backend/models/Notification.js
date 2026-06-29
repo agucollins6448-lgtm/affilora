@@ -23,18 +23,27 @@ const notificationSchema = new mongoose.Schema({
   },
 
   senderType: {
-  type: String,
-  enum: [
-    "system",
-    "admin",
-    "user"
-  ],
-  default: "system"
-},
+    type: String,
+    enum: [
+      "system",
+      "admin",
+      "user"
+    ],
+    default: "system"
+  },
 
   read: {
     type: Boolean,
     default: false
+  },
+
+  expiresAt: {
+    type: Date,
+    default: () =>
+      new Date(
+        Date.now() + 30 * 24 * 60 * 60 * 1000
+      ),
+    expires: 0
   }
 
 }, {
